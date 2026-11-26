@@ -1,0 +1,6 @@
+# Shell scripts keep LF, Windows batch files keep CRLF on every platform.
+*.sh text eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+# Two entries added at the top of the changelog by two branches both stay.
+CHANGELOG.md merge=union
