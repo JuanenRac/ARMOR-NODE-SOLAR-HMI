@@ -20,10 +20,18 @@ route does not exist yet.
 | Without a fresh answer the data is marked old and nothing can be ordered | `core/solar_view.hpp` |
 | A level is said with an icon and a word; only an alarm blinks, at most twice a second | `core/solar_view.hpp` |
 | The PIN is never stored, shown or logged; wrong tries lock it for a growing time that survives a restart | `core/pin_gate.hpp` |
-| An operation on a battery is offered only when the server allows it, the data is fresh, the PIN session is open and the person confirmed | `core/write_gate.hpp` |
+| Only two operations exist from the screen: checking a battery and resetting its counters | `core/write_gate.hpp` |
+| An operation is offered only when the server allows it, the data is fresh, the PIN session is open and the person confirmed | `core/write_gate.hpp` |
 
 A short PIN hashed in flash does not resist somebody who can read the flash: the board has to encrypt it. Whatever the screen allows, the server decides every order on its own, and
 writing to batteries is off in the server unless an administrator turns it on.
+
+## Decided for the next steps
+
+* **Network:** Ethernet when a cable is in, Wi-Fi through the ESP32-C6 as the fallback.
+* **Display:** the newer panel of the board by default; the older one chosen by a build option.
+* **Writing from the screen:** ARMOR-SERVER gets a new, limited permission for it (check a battery and reset its counters only), off by default; the server checks a PIN with every order
+  and records it. The PIN of the screen, kept as a hash on the screen itself, only opens the session. None of this exists in the server yet.
 
 ## What is tested where
 
@@ -36,7 +44,7 @@ writing to batteries is off in the server unless an administrator turns it on.
 
 ## Plan
 
-1. A compact solar answer in ARMOR-SERVER for small screens, defined first in ARMOR-COMMON.
+1. A compact solar answer and the limited battery permission in ARMOR-SERVER, both defined first in ARMOR-COMMON.
 2. The screens (LVGL 9, 1024 x 600) drawn by a simulator on a computer, in eight languages.
 3. The board layer shared with ARMOR-NODE-HMI in the firmware base of ARMOR-COMMON: display, touch, radio, network, updates.
 4. The first power-up on the board.

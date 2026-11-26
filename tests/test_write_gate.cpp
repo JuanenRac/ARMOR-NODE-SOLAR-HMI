@@ -8,6 +8,7 @@ using namespace armor::solarhmi;
 namespace {
 WriteContext all_good() {
   WriteContext context;
+  context.operation = Operation::kResetCounters;
   context.server_allows = context.account_may = context.pin_session = context.confirmed = true;
   context.link = Link::kOnline;
   context.device_stale = false;
@@ -16,10 +17,15 @@ WriteContext all_good() {
 }  // namespace
 
 int main() {
-  CHECK(first_block(WriteContext{}) == WriteBlock::kServerOff);
+  CHECK(first_block(WriteContext{}) == WriteBlock::kNotFromScreen);
   CHECK(first_block(all_good()) == WriteBlock::kNone);
 
   WriteContext context = all_good();
+  context.operation = Operation::kCheck;
+  CHECK(first_block(context) == WriteBlock::kNone);
+  context.operation = Operation::kOther;
+  CHECK(first_block(context) == WriteBlock::kNotFromScreen);   // everything else stays out, however good the rest is
+  context = all_good();
   context.server_allows = false;
   CHECK(first_block(context) == WriteBlock::kServerOff);
   context = all_good();
