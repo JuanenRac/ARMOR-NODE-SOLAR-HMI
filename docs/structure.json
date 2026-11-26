@@ -1,0 +1,411 @@
+{
+  "repo": "ARMOR-NODE-SOLAR-HMI",
+  "ecosystem": "armor",
+  "svg": "en",
+  "cards": [
+    {
+      "name": "core/",
+      "span": 2,
+      "accent": "a",
+      "sub": {
+        "en": "the logic, with no board in it",
+        "es": "la lógica, sin nada de la placa",
+        "de": "die Logik, ohne Platine",
+        "fr": "la logique, sans la carte",
+        "it": "la logica, senza la scheda",
+        "ja": "ボードに依存しないロジック",
+        "zh": "与电路板无关的逻辑",
+        "pt": "a lógica, sem nada da placa"
+      },
+      "rows": [
+        {
+          "name": "solar_data.hpp",
+          "desc": {
+            "en": "what is read of the server",
+            "es": "lo que se lee del servidor",
+            "de": "was vom Server gelesen wird",
+            "fr": "ce qui est lu du serveur",
+            "it": "ciò che si legge dal server",
+            "ja": "サーバーから読む内容",
+            "zh": "从服务器读取的内容",
+            "pt": "o que se lê do servidor"
+          }
+        },
+        {
+          "name": "solar_view.hpp",
+          "desc": {
+            "en": "old data, levels, blinking",
+            "es": "datos antiguos, niveles, parpadeo",
+            "de": "alte Daten, Stufen, Blinken",
+            "fr": "données anciennes, niveaux, clignotement",
+            "it": "dati vecchi, livelli, lampeggio",
+            "ja": "古いデータ、レベル、点滅",
+            "zh": "旧数据、级别、闪烁",
+            "pt": "dados antigos, níveis, intermitência"
+          }
+        },
+        {
+          "name": "pin_gate.hpp",
+          "desc": {
+            "en": "the PIN of the screen",
+            "es": "el PIN de la pantalla",
+            "de": "die PIN des Bildschirms",
+            "fr": "le PIN de l'écran",
+            "it": "il PIN dello schermo",
+            "ja": "画面の PIN",
+            "zh": "屏幕的 PIN",
+            "pt": "o PIN do ecrã"
+          }
+        },
+        {
+          "name": "write_gate.hpp",
+          "desc": {
+            "en": "when a battery operation is offered",
+            "es": "cuándo se ofrece operar una batería",
+            "de": "wann eine Batterieaktion erscheint",
+            "fr": "quand proposer une opération",
+            "it": "quando proporre un'operazione",
+            "ja": "電池操作を提示する条件",
+            "zh": "何时提供电池操作",
+            "pt": "quando propor uma operação"
+          }
+        },
+        {
+          "name": "json.hpp",
+          "desc": {
+            "en": "from the shared firmware base",
+            "es": "de la base de firmware común",
+            "de": "aus der gemeinsamen Firmware-Basis",
+            "fr": "de la base de firmware commune",
+            "it": "dalla base firmware comune",
+            "ja": "共通ファームウェア基盤から",
+            "zh": "来自共享固件基础",
+            "pt": "da base de firmware comum"
+          }
+        },
+        {
+          "name": "hmac_sha256.hpp",
+          "desc": {
+            "en": "from the shared firmware base",
+            "es": "de la base de firmware común",
+            "de": "aus der gemeinsamen Firmware-Basis",
+            "fr": "de la base de firmware commune",
+            "it": "dalla base firmware comune",
+            "ja": "共通ファームウェア基盤から",
+            "zh": "来自共享固件基础",
+            "pt": "da base de firmware comum"
+          }
+        }
+      ]
+    },
+    {
+      "name": "simulator/",
+      "span": 1,
+      "accent": "b",
+      "sub": {
+        "en": "made up",
+        "es": "inventada",
+        "de": "erfunden",
+        "fr": "fictive",
+        "it": "inventata",
+        "ja": "架空",
+        "zh": "虚构",
+        "pt": "inventada"
+      },
+      "rows": [
+        {
+          "name": "plant.hpp",
+          "desc": {
+            "en": "five scenarios",
+            "es": "cinco escenarios",
+            "de": "fünf Szenarien",
+            "fr": "cinq scénarios",
+            "it": "cinque scenari",
+            "ja": "5 つのシナリオ",
+            "zh": "五个场景",
+            "pt": "cinco cenários"
+          }
+        },
+        {
+          "name": "main.cpp",
+          "desc": {
+            "en": "prints the answers",
+            "es": "imprime las respuestas",
+            "de": "gibt die Antworten aus",
+            "fr": "affiche les réponses",
+            "it": "stampa le risposte",
+            "ja": "応答を出力",
+            "zh": "打印应答",
+            "pt": "imprime as respostas"
+          }
+        }
+      ]
+    },
+    {
+      "name": "tests/",
+      "span": 1,
+      "accent": "c",
+      "sub": {
+        "en": "on a computer",
+        "es": "en el PC",
+        "de": "am PC",
+        "fr": "sur PC",
+        "it": "su PC",
+        "ja": "PC 上",
+        "zh": "在电脑上",
+        "pt": "no PC"
+      },
+      "tree": {
+        "en": "host tests and contract checks",
+        "es": "pruebas de host y de contrato",
+        "de": "Host-Tests und Vertragsprüfungen",
+        "fr": "tests hôte et contrôles de contrat",
+        "it": "test host e controlli di contratto",
+        "ja": "ホストテストと契約の検査",
+        "zh": "主机测试与契约检查",
+        "pt": "testes de host e de contrato"
+      },
+      "rows": [
+        {
+          "desc": {
+            "en": "five C++ programs",
+            "es": "cinco programas C++",
+            "de": "fünf C++-Programme",
+            "fr": "cinq programmes C++",
+            "it": "cinque programmi C++",
+            "ja": "C++ プログラム 5 本",
+            "zh": "五个 C++ 程序",
+            "pt": "cinco programas C++"
+          }
+        },
+        {
+          "desc": {
+            "en": "simulator against schemas",
+            "es": "simulador contra esquemas",
+            "de": "Simulator gegen Schemas",
+            "fr": "simulateur et schémas",
+            "it": "simulatore e schemi",
+            "ja": "シミュレータとスキーマ",
+            "zh": "模拟器对照模式",
+            "pt": "simulador e esquemas"
+          }
+        }
+      ]
+    },
+    {
+      "name": "docs/",
+      "span": 1,
+      "accent": "d",
+      "sub": {
+        "en": "design",
+        "es": "diseño",
+        "de": "Entwurf",
+        "fr": "conception",
+        "it": "progetto",
+        "ja": "設計",
+        "zh": "设计",
+        "pt": "conceção"
+      },
+      "tree": {
+        "en": "design and picture sources",
+        "es": "diseño y fuentes de figuras",
+        "de": "Entwurf und Bildquellen",
+        "fr": "conception et sources des figures",
+        "it": "progetto e sorgenti delle figure",
+        "ja": "設計と図の元データ",
+        "zh": "设计与图片源文件",
+        "pt": "conceção e fontes das figuras"
+      },
+      "rows": [
+        {
+          "name": "DESIGN.md",
+          "desc": {
+            "en": "rules and plan",
+            "es": "reglas y plan",
+            "de": "Regeln und Plan",
+            "fr": "règles et plan",
+            "it": "regole e piano",
+            "ja": "ルールと計画",
+            "zh": "规则与计划",
+            "pt": "regras e plano"
+          }
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "Project",
+        "es": "Proyecto",
+        "de": "Projekt",
+        "fr": "Projet",
+        "it": "Progetto",
+        "ja": "プロジェクト",
+        "zh": "项目",
+        "pt": "Projeto"
+      },
+      "kind": "group",
+      "span": 1,
+      "accent": "a",
+      "sub": {
+        "en": "first level",
+        "es": "primer nivel",
+        "de": "erste Ebene",
+        "fr": "premier niveau",
+        "it": "primo livello",
+        "ja": "第 1 階層",
+        "zh": "第一层",
+        "pt": "primeiro nível"
+      },
+      "rows": [
+        {
+          "name": "tools/",
+          "desc": {
+            "en": "shared checks",
+            "es": "comprobaciones comunes",
+            "de": "gemeinsame Prüfungen",
+            "fr": "contrôles communs",
+            "it": "controlli comuni",
+            "ja": "共通の検査",
+            "zh": "共享检查",
+            "pt": "verificações comuns"
+          }
+        },
+        {
+          "name": "images/",
+          "desc": {
+            "en": "README pictures",
+            "es": "figuras de los README",
+            "de": "README-Bilder",
+            "fr": "images des README",
+            "it": "immagini dei README",
+            "ja": "README の図",
+            "zh": "README 图片",
+            "pt": "imagens dos README"
+          }
+        },
+        {
+          "name": ".github/",
+          "desc": {
+            "en": "workflows and forms",
+            "es": "flujos y formularios",
+            "de": "Workflows, Formulare",
+            "fr": "workflows et formulaires",
+            "it": "workflow e moduli",
+            "ja": "ワークフローとフォーム",
+            "zh": "工作流与表单",
+            "pt": "workflows e formulários"
+          }
+        },
+        {
+          "name": "armor.project.json",
+          "desc": {
+            "en": "manifest",
+            "es": "manifiesto",
+            "de": "Manifest",
+            "fr": "manifeste",
+            "it": "manifesto",
+            "ja": "マニフェスト",
+            "zh": "清单",
+            "pt": "manifesto"
+          }
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "Documents",
+        "es": "Documentos",
+        "de": "Dokumente",
+        "fr": "Documents",
+        "it": "Documenti",
+        "ja": "文書",
+        "zh": "文档",
+        "pt": "Documentos"
+      },
+      "kind": "group",
+      "span": 3,
+      "columns": 2,
+      "accent": "b",
+      "rows": [
+        {
+          "name": "CHANGELOG.md",
+          "desc": {
+            "en": "changes",
+            "es": "cambios",
+            "de": "Änderungen",
+            "fr": "changements",
+            "it": "modifiche",
+            "ja": "変更履歴",
+            "zh": "变更记录",
+            "pt": "alterações"
+          }
+        },
+        {
+          "name": "LICENSE",
+          "desc": {
+            "en": "GPL-3.0-or-later",
+            "es": "GPL-3.0-or-later",
+            "de": "GPL-3.0-or-later",
+            "fr": "GPL-3.0-or-later",
+            "it": "GPL-3.0-or-later",
+            "ja": "GPL-3.0-or-later",
+            "zh": "GPL-3.0-or-later",
+            "pt": "GPL-3.0-or-later"
+          }
+        },
+        {
+          "name": "CONTRIBUTING.md",
+          "desc": {
+            "en": "how to contribute",
+            "es": "cómo contribuir",
+            "de": "wie man beiträgt",
+            "fr": "comment contribuer",
+            "it": "come contribuire",
+            "ja": "貢献方法",
+            "zh": "如何贡献",
+            "pt": "como contribuir"
+          }
+        },
+        {
+          "name": "CODE_OF_CONDUCT.md",
+          "desc": {
+            "en": "code of conduct",
+            "es": "código de conducta",
+            "de": "Verhaltenskodex",
+            "fr": "code de conduite",
+            "it": "codice di condotta",
+            "ja": "行動規範",
+            "zh": "行为准则",
+            "pt": "código de conduta"
+          }
+        },
+        {
+          "name": "SECURITY.md",
+          "desc": {
+            "en": "reporting a vulnerability",
+            "es": "informar de fallos de seguridad",
+            "de": "Schwachstellen melden",
+            "fr": "signaler une vulnérabilité",
+            "it": "segnalare vulnerabilità",
+            "ja": "脆弱性の報告",
+            "zh": "漏洞报告",
+            "pt": "comunicar vulnerabilidades"
+          }
+        },
+        {
+          "name": "SUPPORT.md",
+          "desc": {
+            "en": "getting help",
+            "es": "pedir ayuda",
+            "de": "Hilfe erhalten",
+            "fr": "obtenir de l'aide",
+            "it": "ottenere aiuto",
+            "ja": "サポート",
+            "zh": "获取帮助",
+            "pt": "obter ajuda"
+          }
+        }
+      ]
+    }
+  ]
+}
