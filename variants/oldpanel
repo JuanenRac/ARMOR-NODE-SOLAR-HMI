@@ -1,0 +1,2 @@
+# the old panel (no "V2" on the label of the case)
+CONFIG_SOLAR_LCD_PANEL_OLD=y

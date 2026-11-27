@@ -1,0 +1,7 @@
+## ARMOR-NODE-SOLAR-HMI: the managed components of the screen and the touch. Everything else is part of ESP-IDF.
+dependencies:
+  idf: ">=5.5.0"
+  lvgl/lvgl: "~9.3.0"                       # the version the screen simulator draws with
+  espressif/esp_lvgl_port: "~2.6.0"
+  espressif/esp_lcd_jd9165: "~2.0.2"
+  espressif/esp_lcd_touch_gt911: "^1.1.3"

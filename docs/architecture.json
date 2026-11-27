@@ -2,24 +2,154 @@
   "repo": "ARMOR-NODE-SOLAR-HMI",
   "ecosystem": "armor",
   "tagline": "The energy screen of the house: batteries and inverters as ARMOR-SERVER knows them.",
-  "description": "The tested core of ARMOR-NODE-SOLAR-HMI reads the solar devices and totals of ARMOR-SERVER, decides what is old or in alarm, guards a PIN and offers no operation on a battery unless every condition holds. A simulator stands in for the server. The screens and the firmware are not written yet.",
-  "columns": ["WHAT FEEDS IT", "THIS REPOSITORY", "OUTSIDE"],
+  "description": "The tested core of ARMOR-NODE-SOLAR-HMI reads the solar devices and totals of ARMOR-SERVER, decides what is old or in alarm, guards a PIN and offers no operation on a battery unless every condition holds. The screens are drawn on a computer by a simulator; the firmware for the board compiles but has never run on it and has no link to a server yet.",
+  "columns": [
+    "WHAT FEEDS IT",
+    "THIS REPOSITORY",
+    "OUTSIDE"
+  ],
   "nodes": [
-    {"id": "sim", "column": 0, "level": "tested", "title": "Simulator", "lines": ["a made-up installation", "in five scenarios"], "code": ["simulator/plant.hpp", "tests/check_simulator.py"]},
-    {"id": "person", "column": 0, "level": "untested", "title": "Person at the screen", "lines": ["screens and touch", "are not written"]},
-    {"id": "data", "column": 1, "level": "tested", "title": "solar_data", "lines": ["devices and totals;", "impossible values left out"], "code": ["core/solar_data.hpp"]},
-    {"id": "view", "column": 1, "level": "tested", "title": "solar_view", "lines": ["old data is read-only;", "cell and stack levels"], "code": ["core/solar_view.hpp"]},
-    {"id": "pin", "column": 1, "level": "tested", "title": "pin_gate", "lines": ["salted hash, locks,", "a short session"], "code": ["core/pin_gate.hpp"]},
-    {"id": "write", "column": 1, "level": "tested", "title": "write_gate", "lines": ["closed by default;", "sends nothing"], "code": ["core/write_gate.hpp"]},
-    {"id": "board", "column": 1, "level": "untested", "title": "Firmware", "lines": ["ESP32-P4, C6 radio,", "LVGL: not written"]},
-    {"id": "server", "column": 2, "level": "external", "title": "ARMOR-SERVER", "lines": ["solar devices and totals;", "decides every order"]},
-    {"id": "node", "column": 2, "level": "external", "title": "ARMOR-NODE-SOLAR", "lines": ["reads the equipment and", "tells the server"]}
+    {
+      "id": "sim",
+      "column": 0,
+      "level": "tested",
+      "title": "Simulator",
+      "lines": [
+        "a made-up installation",
+        "in five scenarios"
+      ],
+      "code": [
+        "simulator/plant.hpp",
+        "tests/check_simulator.py"
+      ]
+    },
+    {
+      "id": "person",
+      "column": 0,
+      "level": "untested",
+      "title": "Person at the screen",
+      "lines": [
+        "screens drawn by a",
+        "simulator only"
+      ]
+    },
+    {
+      "id": "data",
+      "column": 1,
+      "level": "tested",
+      "title": "solar_data",
+      "lines": [
+        "devices and totals;",
+        "impossible values left out"
+      ],
+      "code": [
+        "core/solar_data.hpp"
+      ]
+    },
+    {
+      "id": "view",
+      "column": 1,
+      "level": "tested",
+      "title": "solar_view",
+      "lines": [
+        "old data is read-only;",
+        "cell and stack levels"
+      ],
+      "code": [
+        "core/solar_view.hpp"
+      ]
+    },
+    {
+      "id": "pin",
+      "column": 1,
+      "level": "tested",
+      "title": "pin_gate",
+      "lines": [
+        "salted hash, locks,",
+        "a short session"
+      ],
+      "code": [
+        "core/pin_gate.hpp"
+      ]
+    },
+    {
+      "id": "write",
+      "column": 1,
+      "level": "tested",
+      "title": "write_gate",
+      "lines": [
+        "closed by default;",
+        "sends nothing"
+      ],
+      "code": [
+        "core/write_gate.hpp"
+      ]
+    },
+    {
+      "id": "board",
+      "column": 1,
+      "level": "untested",
+      "title": "Firmware",
+      "lines": [
+        "screen, touch, cable net;",
+        "never run on the board"
+      ],
+      "code": [
+        "main/app_main.cpp",
+        "main/board.c"
+      ]
+    },
+    {
+      "id": "server",
+      "column": 2,
+      "level": "external",
+      "title": "ARMOR-SERVER",
+      "lines": [
+        "solar devices and totals;",
+        "decides every order"
+      ]
+    },
+    {
+      "id": "node",
+      "column": 2,
+      "level": "external",
+      "title": "ARMOR-NODE-SOLAR",
+      "lines": [
+        "reads the equipment and",
+        "tells the server"
+      ]
+    }
   ],
   "edges": [
-    {"from": "sim", "to": "data", "label": "JSON", "level": "tested"},
-    {"from": "person", "to": "pin", "label": "", "level": "untested"},
-    {"from": "data", "to": "view", "label": "", "level": "tested"},
-    {"from": "pin", "to": "write", "label": "", "level": "tested"},
-    {"from": "board", "to": "server", "label": "HTTPS", "level": "untested"}
+    {
+      "from": "sim",
+      "to": "data",
+      "label": "JSON",
+      "level": "tested"
+    },
+    {
+      "from": "person",
+      "to": "pin",
+      "label": "",
+      "level": "untested"
+    },
+    {
+      "from": "data",
+      "to": "view",
+      "label": "",
+      "level": "tested"
+    },
+    {
+      "from": "pin",
+      "to": "write",
+      "label": "",
+      "level": "tested"
+    },
+    {
+      "from": "board",
+      "to": "server",
+      "label": "HTTPS",
+      "level": "untested"
+    }
   ]
 }

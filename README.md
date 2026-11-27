@@ -21,14 +21,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Language">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
-  <img src="https://img.shields.io/badge/Tests-5%20host%20programs-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-7%20host%20programs-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**Honesty check - what runs today:** The logic behind the screen and a simulator of an installation are written and tested on a computer (5 host programs). **There is no firmware, no screen and no connection to a server yet; nothing here sends an order to a battery, and nothing has run on a board.**
+**Honesty check - what runs today:** The logic behind the screen, a simulator of an installation and the screens are written and tested on a computer (7 host programs), and a firmware for the board compiles. **It has never run on a board, there is no connection to a server yet and nothing here sends an order to a battery.**
 
 ---
 
@@ -40,8 +40,8 @@
 | Maturity | Scaffolding |
 | Role | Solar touch screen of A.R.M.O.R. (family: Clients, parent: ARMOR-SERVER) |
 | Stack | C++17 core and simulator, CMake; Python checks |
-| Tests | 5 host programs |
-| Board | Guition JC1060P470C (ESP32-P4 with ESP32-C6, 7-inch 1024 x 600); not yet supported by code |
+| Tests | 7 host programs |
+| Board | Guition JC1060P470C (ESP32-P4 with ESP32-C6, 7-inch 1024 x 600); code that compiles, never run on it |
 | Runs on | A computer with CMake, a C++17 compiler and Python 3.11+ |
 | On real hardware | Nothing has run on the board |
 | License | GPL-3.0-or-later |
@@ -56,10 +56,10 @@ Each line is one part of this repository and the light says how far it is today.
 
 | Area | State | What it means here |
 |---|---|---|
-| Software | 🟠 | The core that reads, judges and guards is written; the firmware is not. |
+| Software | 🟠 | Core, screens and a first firmware are written; no server link. |
 | Tests | 🟡 | Host programs and two checks against ARMOR-COMMON; early stage. |
-| Interface | 🔴 | No screen is drawn yet. |
-| Hardware | 🔴 | The board has no code and nothing has run on it. |
+| Interface | 🟠 | The screens are drawn by a simulator on a computer; never on the panel. |
+| Hardware | 🔴 | The firmware compiles; nothing has run on the board. |
 | Security | 🟠 | PIN and write checks are tested logic only; no independent review. |
 | Updates | 🔴 | There is nothing to update yet. |
 | Integration | 🔴 | No link to ARMOR-SERVER yet; the compact solar route it needs does not exist. |
@@ -88,6 +88,8 @@ Each line is one part of this repository and the light says how far it is today.
 * A PIN kept as a salted hash, with growing locks and a short session.
 * A battery operation is offered only when the server allows it, the data is fresh, the PIN is open and the person confirmed.
 * A simulator with five scenarios, checked against the message schemas.
+* Screens at 1024 x 600 in eight languages, drawn on a computer by the same code as the firmware.
+* A board check screen for the first day: chip, memory, panel, touch, I2C, cable network, colour bars and corners.
 
 ## 🔒 Security & Safety
 
@@ -120,12 +122,15 @@ python -I tools/armor_ci_validate.py
 | `test_pin_gate.cpp` | PIN hash, locks, session |
 | `test_write_gate.cpp` | every reason that stops an operation |
 | `test_plant.cpp` | the five scenarios |
+| `test_screen_text.cpp` | every word in the eight languages |
+| `test_screen_model.cpp` | the alarms listed, numbers, board pins |
+| `check_font_glyphs.py` | the fonts hold every character |
 | `check_simulator.py` | the simulator follows the schemas |
 | `check_base_copies.py` | shared files match their source |
 
 ## 🏗️ Build & Release
 
-There is no firmware to build and no release yet. When there is, it will be built in GitHub Actions only.
+There is no release yet. The firmware is built only in GitHub Actions (workflow `Firmware check (ESP32-P4)`): each variant is one file written at address 0 with `esptool`. It has never run on a board. The workflow `Screen pictures (simulator)` draws the screens.
 
 ## 📂 Repository Structure
 
@@ -139,27 +144,41 @@ There is no firmware to build and no release yet. When there is, it will be buil
 ```text
 ARMOR-NODE-SOLAR-HMI/
 ├── core/
-│   ├── solar_data.hpp    what is read of the server
-│   ├── solar_view.hpp    old data, levels, blinking
-│   ├── pin_gate.hpp      the PIN of the screen
-│   ├── write_gate.hpp    when a battery operation is offered
-│   ├── json.hpp          from the shared firmware base
-│   └── hmac_sha256.hpp   from the shared firmware base
+│   ├── solar_data.hpp      what is read of the server
+│   ├── solar_view.hpp      old data, levels, blinking
+│   ├── pin_gate.hpp        the PIN of the screen
+│   ├── write_gate.hpp      when a battery operation is offered
+│   ├── screen_text.hpp     words in 8 languages
+│   ├── screen_model.hpp    alarms and numbers
+│   ├── board_p4_jc1060.h   pins of the board
+│   ├── json.hpp            from the shared firmware base
+│   └── hmac_sha256.hpp     from the shared firmware base
+├── main/
+│   ├── ui.cpp              the solar pages
+│   ├── diag_ui.cpp         the board check
+│   ├── board.c             screen, touch, network
+│   ├── app_main.cpp        the start and the log
+│   └── fonts/              fonts of the screen
 ├── simulator/
-│   ├── plant.hpp         five scenarios
-│   └── main.cpp          prints the answers
-├── tests/                host tests and contract checks
-├── docs/                 design and picture sources
-├── tools/                shared checks
-├── images/               README pictures
-├── .github/              workflows and forms
-├── armor.project.json    manifest
-├── CHANGELOG.md          changes
-├── LICENSE               GPL-3.0-or-later
-├── CONTRIBUTING.md       how to contribute
-├── CODE_OF_CONDUCT.md    code of conduct
-├── SECURITY.md           reporting a vulnerability
-└── SUPPORT.md            getting help
+│   ├── plant.hpp           five scenarios
+│   ├── main.cpp            prints the answers
+│   └── screens/            pictures on a PC
+├── tests/                  host tests and contract checks
+├── docs/                   design and picture sources
+├── CMakeLists.txt          firmware project
+├── sdkconfig.defaults      build settings
+├── partitions.csv          flash layout
+├── variants/               other chip or panel
+├── tools/                  shared checks
+├── images/                 README pictures
+├── .github/                workflows and forms
+├── armor.project.json      manifest
+├── CHANGELOG.md            changes
+├── LICENSE                 GPL-3.0-or-later
+├── CONTRIBUTING.md         how to contribute
+├── CODE_OF_CONDUCT.md      code of conduct
+├── SECURITY.md             reporting a vulnerability
+└── SUPPORT.md              getting help
 ```
 
 </details>
@@ -168,15 +187,15 @@ ARMOR-NODE-SOLAR-HMI/
 
 **Known limits today**
 
-* **What it does**: Reads the server's solar answer, judges what it says and guards the PIN, on a computer.
-* **What it does not do**: Draw a screen, connect to anything, send an order or run on the board.
+* **What it does**: Reads the server's solar answer, judges it, guards the PIN, draws the screens on a computer and compiles a firmware for the board.
+* **What it does not do**: Connect to a server or to Wi-Fi, update itself, send an order, or run on the board (never tried).
 
 **Next**
 
-* A compact solar answer in ARMOR-SERVER for small screens, defined first in ARMOR-COMMON.
-* The screens at 1024 x 600 drawn by a simulator on a computer, in eight languages.
+* The first power-up on the board with the board check screen.
+* A compact solar answer in ARMOR-SERVER, defined first in ARMOR-COMMON, and the link of the screen to it.
+* Wi-Fi through the ESP32-C6, settings kept in flash and updates.
 * The board layer shared with ARMOR-NODE-HMI.
-* The first power-up on the board.
 
 ## 🌍 Languages
 

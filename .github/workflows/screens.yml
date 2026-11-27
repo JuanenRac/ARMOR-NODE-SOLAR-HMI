@@ -1,0 +1,63 @@
+# =============================================================================
+# A.R.M.O.R. - Pictures of the solar screen, drawn by the screen simulator
+# Copyright (C) 2026 JuanenRac (Electro Hobby 3D)
+# GPL-3.0-or-later - see LICENSE
+# =============================================================================
+# Builds simulator/screens (main/ui.cpp and main/diag_ui.cpp, the real screens, with LVGL 9 on a computer), draws every scene in the eight languages and keeps the pictures as an
+# artifact for two weeks. Evidence: simulator. It publishes and signs nothing.
+
+name: Screen pictures (simulator)
+
+on:
+  pull_request:
+    paths: ["main/**", "core/**", "simulator/**", ".github/workflows/screens.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: screens-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  pictures:
+    name: Draw the screens in eight languages
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build the simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmake -S simulator/screens -B build/screens -DCMAKE_BUILD_TYPE=Release
+          cmake --build build/screens -j "$(nproc)"
+
+      - name: Draw the pictures
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p shots
+          ./build/screens/solar_screens shots | tee shots/result.txt
+          grep -q '^SCREENS=PASS languages=8$' shots/result.txt
+          test "$(ls shots/*.ppm | wc -l)" -eq 96
+
+      - name: Turn them into small PNG files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet pillow==11.3.0
+          python3 simulator/screens/ppm_to_png.py shots pictures
+
+      - name: Keep the pictures
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: solar-screens
+          path: pictures
+          retention-days: 14
+          if-no-files-found: error
