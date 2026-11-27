@@ -1,0 +1,71 @@
+# =============================================================================
+# A.R.M.O.R. - Build of the firmware of the solar screen (ESP32-P4)
+# Copyright (C) 2026 JuanenRac (Electro Hobby 3D)
+# GPL-3.0-or-later - see LICENSE
+# =============================================================================
+# Compiles the firmware in the official ESP-IDF container, in three variants (chip revision 1.x with the new panel, revision 3.x with the new panel, revision 1.x with the old panel),
+# and keeps for each a single file that is written at address 0. It publishes, signs and releases nothing, and holds no secret. A green run means that it compiles, not that it
+# works on a board.
+
+name: Firmware check (ESP32-P4)
+
+on:
+  pull_request:
+    paths: ["main/**", "core/**", "variants/**", "sdkconfig.defaults", "partitions.csv", "CMakeLists.txt", "tools/build_firmware.sh", "armor.project.json", ".github/workflows/firmware-check.yml"]
+  push:
+    branches: [main]
+    paths: ["main/**", "core/**", "variants/**", "sdkconfig.defaults", "partitions.csv", "CMakeLists.txt", "tools/build_firmware.sh", "armor.project.json", ".github/workflows/firmware-check.yml"]
+  workflow_dispatch:
+    inputs:
+      settings:
+        description: "Extra settings to try, separated by ; (CONFIG_SOLAR_LCD_RST_GPIO=27;CONFIG_SOLAR_TOUCH_MIRROR_X=y)"
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: firmware-check-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  build:
+    name: Build ${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: rev1-newpanel
+            variants: ""
+          - name: rev3-newpanel
+            variants: variants/rev3
+          - name: rev1-oldpanel
+            variants: variants/oldpanel
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build in the ESP-IDF container
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+          VARIANTS: ${{ matrix.variants }}
+          SOLAR_SETTINGS: ${{ inputs.settings }}
+        run: |
+          set -euo pipefail
+          # VARIANTS is empty or one of the fixed words of the matrix above
+          docker run --rm -e SOLAR_SETTINGS -v "$PWD:/project" -w /project espressif/idf:v5.5.5 bash tools/build_firmware.sh "$NAME" $VARIANTS
+
+      - name: Keep the images
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: solar-hmi-${{ matrix.name }}
+          path: out/*
+          retention-days: 30
+          if-no-files-found: error

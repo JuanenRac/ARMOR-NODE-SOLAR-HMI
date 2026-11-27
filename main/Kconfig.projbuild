@@ -1,0 +1,103 @@
+menu "Solar screen: board (not verified on a board)"
+
+    config SOLAR_LCD_PANEL_OLD
+        bool "Old panel (no V2 on the label of the case)"
+        default n
+        help
+            The two panels differ in the horizontal back porch (new 136, old 160) and, in the maker's examples, in the start-up commands of the controller.
+
+    config SOLAR_LCD_RST_GPIO
+        int "Reset pin of the screen (-1: not driven)"
+        range -1 54
+        default 0
+        help
+            The maker's documents disagree: GPIO0 in one example, GPIO27 in another (GPIO27 is also the receive pin of the RS485 port).
+
+    config SOLAR_LCD_BACKLIGHT_GPIO
+        int "Backlight pin"
+        range -1 54
+        default 23
+
+    config SOLAR_LCD_BACKLIGHT_INVERT
+        bool "Backlight: a low level lights it"
+        default n
+
+    config SOLAR_LCD_DPI_CLOCK_MHZ
+        int "Pixel clock (MHz)"
+        range 30 80
+        default 52
+
+    config SOLAR_LCD_LANE_MBPS
+        int "MIPI-DSI bit rate of each of the two lanes (Mbps)"
+        range 400 1500
+        default 750
+
+    config SOLAR_LCD_HSYNC
+        int "Horizontal sync width"
+        default 24
+
+    config SOLAR_LCD_HFP
+        int "Horizontal front porch"
+        default 160
+
+    config SOLAR_LCD_HBP
+        int "Horizontal back porch"
+        default 160 if SOLAR_LCD_PANEL_OLD
+        default 136
+
+    config SOLAR_LCD_VSYNC
+        int "Vertical sync width"
+        default 2
+
+    config SOLAR_LCD_VBP
+        int "Vertical back porch"
+        default 21
+
+    config SOLAR_LCD_VFP
+        int "Vertical front porch"
+        default 12
+
+    config SOLAR_LCD_TEST_BARS_MS
+        int "Colour bars of the display interface at start (ms, 0: none)"
+        range 0 10000
+        default 1500
+        help
+            The bars are made by the chip itself, without the frame buffer: they tell a problem of the panel or its timing apart from a problem of the drawing.
+
+    config SOLAR_TOUCH_INT_GPIO
+        int "Touch interrupt pin (-1: not connected, the controller is polled)"
+        range -1 54
+        default -1
+
+    config SOLAR_TOUCH_RST_GPIO
+        int "Touch reset pin (-1: not driven)"
+        range -1 54
+        default -1
+
+    config SOLAR_TOUCH_WIDTH
+        int "Width the touch controller is set up for"
+        default 1024
+        help
+            The maker's example says the controller may arrive set up for 800 x 480; the board check screen shows how far a finger gets.
+
+    config SOLAR_TOUCH_HEIGHT
+        int "Height the touch controller is set up for"
+        default 600
+
+    config SOLAR_TOUCH_SWAP_XY
+        bool "Touch: swap the two axes"
+        default n
+
+    config SOLAR_TOUCH_MIRROR_X
+        bool "Touch: mirror left and right"
+        default n
+
+    config SOLAR_TOUCH_MIRROR_Y
+        bool "Touch: mirror top and bottom"
+        default n
+
+    config SOLAR_ETHERNET
+        bool "Start the cable network (IP101)"
+        default y
+
+endmenu

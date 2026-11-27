@@ -40,11 +40,20 @@ writing to batteries is off in the server unless an administrator turns it on.
 | The core | the computer | `ctest`: the five host programs |
 | The simulator | the computer | its readings are checked against the schemas of ARMOR-COMMON (`tests/check_simulator.py`) |
 | The files taken from the shared firmware base | the computer | `tests/check_base_copies.py` |
-| Screens, network, board | **nowhere yet** | not written |
+| The screens | the computer | `simulator/screens` draws them (workflow `Screen pictures (simulator)`) |
+| The firmware | GitHub Actions | it compiles (workflow `Firmware check (ESP32-P4)`); **it has never run on a board** |
+
+## The board
+
+The pins in `core/board_p4_jc1060.h` and the settings in `main/Kconfig.projbuild` come from the maker's documents; none is verified on a board. Where the documents disagree (the reset of
+the screen, the interrupt and reset of the touch, the size the touch controller is set up for) the value is a build setting. The panel is started with the default commands of the component
+`esp_lcd_jd9165`; the maker's own table is not used.
+
+The first image does not start the ESP32-C6: Wi-Fi comes later, and a radio chip with another firmware version must not stop the board from starting.
 
 ## Plan
 
-1. A compact solar answer and the limited battery permission in ARMOR-SERVER, both defined first in ARMOR-COMMON.
-2. The screens (LVGL 9, 1024 x 600) drawn by a simulator on a computer, in eight languages.
-3. The board layer shared with ARMOR-NODE-HMI in the firmware base of ARMOR-COMMON: display, touch, radio, network, updates.
-4. The first power-up on the board.
+1. The first power-up on the board with the board check screen, and the pins and timings it shows to be right.
+2. A compact solar answer and the limited battery permission in ARMOR-SERVER, both defined first in ARMOR-COMMON, and the link of the screen to the server.
+3. Wi-Fi through the ESP32-C6, settings kept in flash (including the PIN), updates over the network.
+4. The board layer shared with ARMOR-NODE-HMI in the firmware base of ARMOR-COMMON.

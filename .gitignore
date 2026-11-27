@@ -1,3 +1,9 @@
 build/
 __pycache__/
 *.log
+sdkconfig
+managed_components/
+dependencies.lock
+out/
+shots/
+pictures/
