@@ -22,7 +22,7 @@
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Sprache">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
   <img src="https://img.shields.io/badge/Tests-7%20host%20programs-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Reifegrad">
 </p>
 
@@ -36,7 +36,7 @@
 
 | | |
 |---|---|
-| Version | `0.0.1` |
+| Version | `0.0.2` |
 | Reifegrad | Gerüst |
 | Rolle | Solar-Touchscreen von A.R.M.O.R. (Familie: Clients, übergeordnet: ARMOR-SERVER) |
 | Technik | Kern und Simulator in C++17, CMake; Prüfungen in Python |
@@ -130,7 +130,7 @@ python -I tools/armor_ci_validate.py
 
 ## 🏗️ Build und Veröffentlichung
 
-Es gibt noch kein Release. Die Firmware wird nur in GitHub Actions gebaut (Workflow `Firmware check (ESP32-P4)`): Jede Variante ist eine Datei, die mit `esptool` ab Adresse 0 geschrieben wird. Sie lief noch nie auf einer Platine. Der Workflow `Screen pictures (simulator)` zeichnet die Bildschirme.
+Das erste Release enthält eine Datei je Variante (Bildschirm- und Chiprevision), in GitHub Actions gebaut und mit `esptool` ab Adresse 0 geschrieben. **Nicht auf Hardware getestet: Sie lief noch nie auf einer Platine.** Der Workflow `Screen pictures (simulator)` zeichnet die Bildschirme.
 
 ## 📂 Struktur des Repositorys
 

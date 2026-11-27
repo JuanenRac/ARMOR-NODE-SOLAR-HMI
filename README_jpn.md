@@ -22,7 +22,7 @@
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Language">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
   <img src="https://img.shields.io/badge/Tests-7%20host%20programs-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -36,7 +36,7 @@
 
 | | |
 |---|---|
-| バージョン | `0.0.1` |
+| バージョン | `0.0.2` |
 | 成熟度 | 足場段階 |
 | 役割 | A.R.M.O.R. の太陽光タッチ画面（ファミリー：Clients、親：ARMOR-SERVER） |
 | 技術 | C++17 のコアとシミュレータ、CMake、Python の検査 |
@@ -130,7 +130,7 @@ python -I tools/armor_ci_validate.py
 
 ## 🏗️ ビルドとリリース
 
-リリースはまだありません。ファームウェアは GitHub Actions のみでビルドします（ワークフロー `Firmware check (ESP32-P4)`）。各バリエーションは `esptool` でアドレス 0 に書き込む 1 ファイルです。基板上で動かしたことはありません。画面はワークフロー `Screen pictures (simulator)` が描画します。
+最初のリリースには、画面とチップのリビジョンごとに1つのファイルがあります。GitHub Actions でビルドし、`esptool` でアドレス 0 に書き込みます。**実機ではテストしていません。基板上で動かしたことはありません。** ワークフロー `Screen pictures (simulator)` が画面を描画します。
 
 ## 📂 リポジトリの構成
 

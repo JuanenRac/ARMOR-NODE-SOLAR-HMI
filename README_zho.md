@@ -22,7 +22,7 @@
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Language">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
   <img src="https://img.shields.io/badge/Tests-7%20host%20programs-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -36,7 +36,7 @@
 
 | | |
 |---|---|
-| 版本 | `0.0.1` |
+| 版本 | `0.0.2` |
 | 成熟度 | 雏形 |
 | 角色 | A.R.M.O.R. 的太阳能触摸屏（家族：Clients，上级：ARMOR-SERVER） |
 | 技术栈 | C++17 核心与模拟器、CMake；Python 检查 |
@@ -130,7 +130,7 @@ python -I tools/armor_ci_validate.py
 
 ## 🏗️ 构建与发布
 
-尚未发布版本。固件仅在 GitHub Actions 中编译（工作流 `Firmware check (ESP32-P4)`）：每个变体是一个用 `esptool` 写入地址 0 的文件。从未在电路板上运行。工作流 `Screen pictures (simulator)` 负责绘制界面。
+首个发布版本为每个变体（屏幕和芯片版本）提供一个文件，在 GitHub Actions 中编译，用 `esptool` 写入地址 0。**未经硬件测试：从未在电路板上运行过。** 工作流 `Screen pictures (simulator)` 绘制各个屏幕。
 
 ## 📂 仓库结构
 
