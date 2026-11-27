@@ -22,7 +22,7 @@
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Linguaggio">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
   <img src="https://img.shields.io/badge/Tests-7%20host%20programs-2ea44f.svg" alt="Test">
-  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Versione">
+  <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Versione">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturità">
 </p>
 
@@ -36,7 +36,7 @@
 
 | | |
 |---|---|
-| Versione | `0.0.1` |
+| Versione | `0.0.2` |
 | Maturità | Impalcatura |
 | Ruolo | Schermo touch solare di A.R.M.O.R. (famiglia: Clients, genitore: ARMOR-SERVER) |
 | Tecnologia | Nucleo e simulatore in C++17, CMake; controlli in Python |
@@ -130,7 +130,7 @@ python -I tools/armor_ci_validate.py
 
 ## 🏗️ Compilazione e rilascio
 
-Non c'è ancora una release. Il firmware si compila solo in GitHub Actions (workflow `Firmware check (ESP32-P4)`): ogni variante è un file scritto all'indirizzo 0 con `esptool`. Non è mai girato su una scheda. Il workflow `Screen pictures (simulator)` disegna le schermate.
+La prima release contiene un file per variante (revisione dello schermo e del chip), compilato in GitHub Actions e scritto all'indirizzo 0 con `esptool`. **Non provata su hardware: non è mai girata su una scheda.** Il workflow `Screen pictures (simulator)` disegna le schermate.
 
 ## 📂 Struttura del repository
 
