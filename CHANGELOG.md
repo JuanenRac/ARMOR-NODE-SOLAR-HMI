@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The shared tools read the output of processes as UTF-8:** `tools/status_lights.py`, `tools/sync_manifests.py` and `tools/universal_readme_check.py` are the current copies; on Windows a character outside the code page no longer breaks a check.
 - **What the screen reads of the solar equipment (`core/solar_data.hpp`):** the devices and totals as ARMOR-SERVER answers them; a value that is missing or out of the range of the contract is left out instead of being shown as a zero, and an entry that does not say it is fresh counts as old.
 - **What the screen decides (`core/solar_view.hpp`):** without a fresh answer it only reads; the levels of a cell, a module and a battery; every level has an icon and a word, and only an alarm blinks, never more than twice a second.
 - **The PIN of the screen (`core/pin_gate.hpp`):** stored only as a salted PBKDF2-HMAC-SHA256 hash, locked for a growing time after wrong tries (also across a restart), with a short session that ends when nobody touches the screen.
