@@ -26,7 +26,6 @@ std::uint16_t g_frame[kWidth * kHeight];    // the last full picture
 std::uint32_t g_tick_ms = 0;
 ui::State g_state;
 int g_failures = 0;
-lv_obj_t* g_main = nullptr;   // the screen of the solar pages
 
 std::uint32_t tick_cb() { return g_tick_ms; }
 
@@ -102,9 +101,7 @@ void take_language(const std::string& directory, const std::string& language) {
       },
       {}, language);
   save(directory, language, "board_check");
-  lv_obj_t* const check = lv_screen_active();
-  lv_screen_load(g_main);
-  lv_obj_delete_async(check);
+  diag::close();
 
   // before the first answer
   ui::show(ui::Page::kSummary);
@@ -182,7 +179,6 @@ int main(int argc, char** argv) {
     std::fprintf(stderr, "the screen could not be built\n");
     return 1;
   }
-  g_main = lv_screen_active();
   for (const std::string& language : languages) take_language(directory, language);
   std::printf("SCREENS=%s languages=%zu\n", g_failures == 0 ? "PASS" : "FAIL", languages.size());
   return g_failures == 0 ? 0 : 1;

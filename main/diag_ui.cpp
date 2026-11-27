@@ -108,18 +108,14 @@ void on_language(lv_event_t*) {
 void on_open(lv_event_t*) {
   lv_async_call(
       [](void*) {
-        if (g_timer != nullptr) lv_timer_delete(g_timer);
-        g_timer = nullptr;
-        if (g_previous != nullptr) lv_screen_load(g_previous);
-        if (g_screen != nullptr) lv_obj_delete(g_screen);
-        g_screen = nullptr;
+        close();
         if (g_open) g_open();
       },
       nullptr);
 }
 
 void build() {
-  if (g_screen == nullptr) return;
+  if (g_screen == nullptr) return;   // closed before a change of language was drawn
   lv_obj_clean(g_screen);
   label(g_screen, 80, 14, 600, word("diag_title"), normal_font(), 0x38BDF8);
   label(g_screen, 700, 18, 240, std::string(language()), small_font(), 0x9FB0C7);
@@ -145,6 +141,15 @@ void build() {
 }
 
 }  // namespace
+
+void close() {
+  if (g_screen == nullptr) return;
+  if (g_timer != nullptr) lv_timer_delete(g_timer);
+  g_timer = nullptr;
+  if (g_previous != nullptr) lv_screen_load(g_previous);
+  lv_obj_delete(g_screen);
+  g_screen = nullptr;
+}
 
 void show(std::function<Info()> info, std::function<void()> open, const std::string& asked) {
   g_info = std::move(info);

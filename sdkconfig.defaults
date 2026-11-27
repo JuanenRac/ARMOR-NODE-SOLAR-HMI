@@ -11,6 +11,8 @@ CONFIG_ESPTOOLPY_FLASHFREQ_80M=y
 CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
 CONFIG_PARTITION_TABLE_CUSTOM=y
 CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+# the second boot loader of the chip revision 3.x does not fit before the usual place of the table
+CONFIG_PARTITION_TABLE_OFFSET=0x10000
 
 # the external RAM holds the frame buffer of the screen; a board whose RAM does not answer still starts and says so
 CONFIG_IDF_EXPERIMENTAL_FEATURES=y

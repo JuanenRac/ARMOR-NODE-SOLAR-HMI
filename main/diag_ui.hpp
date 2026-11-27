@@ -21,5 +21,7 @@ struct Info {
 // Builds the check screen and makes it the one shown. `info` is asked twice a second. `open` is called when the button to leave is touched (the screen shown before comes back by itself).
 // `language` may be changed by touching its button: the eight languages follow each other, to see that every font is on the board.
 void show(std::function<Info()> info, std::function<void()> open, const std::string& language);
+// Shows again the screen there was before and frees the check screen. Not to be called from one of its own events.
+void close();
 
 }  // namespace armor::solarhmi::diag
