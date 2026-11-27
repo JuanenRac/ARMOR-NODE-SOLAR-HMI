@@ -28,7 +28,7 @@
 
 ---
 
-**Controllo di onestà - cosa funziona oggi:** La logica dello schermo e un simulatore di impianto sono scritti e provati su un computer (5 programmi host). **Non ci sono ancora firmware, schermate né connessione a un server; nulla qui invia ordini a una batteria e nulla è girato su una scheda.**
+**Controllo di onestà - cosa funziona oggi:** La logica dello schermo, un simulatore di impianto e le schermate sono scritti e provati su un computer (5 programmi host), e un firmware per la scheda si compila. **Non è mai girato su una scheda, non c'è ancora connessione a un server e nulla qui invia ordini a una batteria.**
 
 ---
 
@@ -41,7 +41,7 @@
 | Ruolo | Schermo touch solare di A.R.M.O.R. (famiglia: Clients, genitore: ARMOR-SERVER) |
 | Tecnologia | Nucleo e simulatore in C++17, CMake; controlli in Python |
 | Test | 5 programmi host |
-| Scheda | Guition JC1060P470C (ESP32-P4 con ESP32-C6, 7 pollici, 1024 x 600); ancora senza codice di scheda |
+| Scheda | Guition JC1060P470C (ESP32-P4 con ESP32-C6, 7 pollici, 1024 x 600); codice che si compila, mai eseguito su di essa |
 | Gira su | Un computer con CMake, un compilatore C++17 e Python 3.11+ |
 | Su hardware reale | Nulla è girato sulla scheda |
 | Licenza | GPL-3.0-or-later |
@@ -56,10 +56,10 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 
 | Area | Stato | Cosa significa qui |
 |---|---|---|
-| Software | 🟠 | Il nucleo che legge, giudica e protegge è scritto; il firmware no. |
+| Software | 🟠 | Nucleo, schermate e un primo firmware scritti; senza collegamento al server. |
 | Test | 🟡 | Programmi host e due controlli con ARMOR-COMMON; fase iniziale. |
-| Interfaccia | 🔴 | Nessuna schermata è ancora disegnata. |
-| Hardware | 🔴 | La scheda non ha codice e nulla vi è girato. |
+| Interfaccia | 🟠 | Le schermate sono disegnate da un simulatore su computer; mai sul pannello. |
+| Hardware | 🔴 | Il firmware si compila; nulla è girato sulla scheda. |
 | Sicurezza | 🟠 | PIN e controllo di scrittura sono solo logica provata; nessuna revisione indipendente. |
 | Aggiornamenti | 🔴 | Non c'è ancora nulla da aggiornare. |
 | Integrazione | 🔴 | Nessun collegamento con ARMOR-SERVER; la rotta solare compatta necessaria non esiste. |
@@ -88,6 +88,8 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 * PIN conservato come hash con sale, con blocchi crescenti e sessione breve.
 * Un'operazione sulla batteria è proposta solo se il server la consente, i dati sono recenti, il PIN è aperto e la persona ha confermato.
 * Simulatore con cinque scenari, verificato con gli schemi dei messaggi.
+* Schermate 1024 x 600 in otto lingue, disegnate al computer dallo stesso codice del firmware.
+* Schermata di controllo per il primo giorno: chip, memoria, pannello, tocco, I2C, rete via cavo, barre di colore e angoli.
 
 ## 🔒 Sicurezza e protezione
 
@@ -120,12 +122,15 @@ python -I tools/armor_ci_validate.py
 | `test_pin_gate.cpp` | hash del PIN, blocchi, sessione |
 | `test_write_gate.cpp` | ogni motivo che blocca un'operazione |
 | `test_plant.cpp` | i cinque scenari |
+| `test_screen_text.cpp` | ogni testo nelle otto lingue |
+| `test_screen_model.cpp` | allarmi elencati, cifre, pin |
+| `check_font_glyphs.py` | i font hanno ogni carattere |
 | `check_simulator.py` | il simulatore rispetta gli schemi |
 | `check_base_copies.py` | i file condivisi coincidono con l'origine |
 
 ## 🏗️ Compilazione e rilascio
 
-Non ci sono ancora firmware né release. Quando ci saranno, si compileranno solo in GitHub Actions.
+Non c'è ancora una release. Il firmware si compila solo in GitHub Actions (workflow `Firmware check (ESP32-P4)`): ogni variante è un file scritto all'indirizzo 0 con `esptool`. Non è mai girato su una scheda. Il workflow `Screen pictures (simulator)` disegna le schermate.
 
 ## 📂 Struttura del repository
 
@@ -139,27 +144,41 @@ Non ci sono ancora firmware né release. Quando ci saranno, si compileranno solo
 ```text
 ARMOR-NODE-SOLAR-HMI/
 ├── core/
-│   ├── solar_data.hpp    ciò che si legge dal server
-│   ├── solar_view.hpp    dati vecchi, livelli, lampeggio
-│   ├── pin_gate.hpp      il PIN dello schermo
-│   ├── write_gate.hpp    quando proporre un'operazione
-│   ├── json.hpp          dalla base firmware comune
-│   └── hmac_sha256.hpp   dalla base firmware comune
+│   ├── solar_data.hpp      ciò che si legge dal server
+│   ├── solar_view.hpp      dati vecchi, livelli, lampeggio
+│   ├── pin_gate.hpp        il PIN dello schermo
+│   ├── write_gate.hpp      quando proporre un'operazione
+│   ├── screen_text.hpp     testi in 8 lingue
+│   ├── screen_model.hpp    allarmi e cifre
+│   ├── board_p4_jc1060.h   pin della scheda
+│   ├── json.hpp            dalla base firmware comune
+│   └── hmac_sha256.hpp     dalla base firmware comune
+├── main/
+│   ├── ui.cpp              le pagine solari
+│   ├── diag_ui.cpp         controllo scheda
+│   ├── board.c             schermo, tocco, rete
+│   ├── app_main.cpp        avvio e registro
+│   └── fonts/              font dello schermo
 ├── simulator/
-│   ├── plant.hpp         cinque scenari
-│   └── main.cpp          stampa le risposte
-├── tests/                test host e controlli di contratto
-├── docs/                 progetto e sorgenti delle figure
-├── tools/                controlli comuni
-├── images/               immagini dei README
-├── .github/              workflow e moduli
-├── armor.project.json    manifesto
-├── CHANGELOG.md          modifiche
-├── LICENSE               GPL-3.0-or-later
-├── CONTRIBUTING.md       come contribuire
-├── CODE_OF_CONDUCT.md    codice di condotta
-├── SECURITY.md           segnalare vulnerabilità
-└── SUPPORT.md            ottenere aiuto
+│   ├── plant.hpp           cinque scenari
+│   ├── main.cpp            stampa le risposte
+│   └── screens/            immagini al PC
+├── tests/                  test host e controlli di contratto
+├── docs/                   progetto e sorgenti delle figure
+├── CMakeLists.txt          progetto firmware
+├── sdkconfig.defaults      impostazioni build
+├── partitions.csv          mappa della flash
+├── variants/               altro chip o pannello
+├── tools/                  controlli comuni
+├── images/                 immagini dei README
+├── .github/                workflow e moduli
+├── armor.project.json      manifesto
+├── CHANGELOG.md            modifiche
+├── LICENSE                 GPL-3.0-or-later
+├── CONTRIBUTING.md         come contribuire
+├── CODE_OF_CONDUCT.md      codice di condotta
+├── SECURITY.md             segnalare vulnerabilità
+└── SUPPORT.md              ottenere aiuto
 ```
 
 </details>
@@ -168,15 +187,15 @@ ARMOR-NODE-SOLAR-HMI/
 
 **Limiti noti oggi**
 
-* **Cosa fa**: Legge la risposta solare del server, la valuta e protegge il PIN, su un computer.
-* **Cosa non fa**: Disegnare schermate, collegarsi, inviare ordini o girare sulla scheda.
+* **Cosa fa**: Legge la risposta solare del server, la valuta, protegge il PIN, disegna le schermate al computer e compila un firmware per la scheda.
+* **Cosa non fa**: Collegarsi a un server o al Wi-Fi, aggiornarsi, inviare ordini o girare sulla scheda (mai provato).
 
 **Prossimi passi**
 
-* Una risposta solare compatta in ARMOR-SERVER per piccoli schermi, definita prima in ARMOR-COMMON.
-* Le schermate a 1024 x 600 disegnate da un simulatore su computer, in otto lingue.
+* La prima accensione sulla scheda con la schermata di controllo.
+* Una risposta solare compatta in ARMOR-SERVER, definita prima in ARMOR-COMMON, e il collegamento dello schermo.
+* Wi-Fi tramite l'ESP32-C6, impostazioni in flash e aggiornamenti.
 * Lo strato di scheda condiviso con ARMOR-NODE-HMI.
-* La prima accensione sulla scheda.
 
 ## 🌍 Lingue
 

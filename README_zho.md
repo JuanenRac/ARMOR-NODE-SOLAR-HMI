@@ -28,7 +28,7 @@
 
 ---
 
-**诚实性检查 - 今天真正能运行的部分：** 屏幕背后的逻辑和一个设备模拟器已经编写完成，并在电脑上测试（5 个主机程序）。**目前还没有固件、界面，也没有与服务器的连接；这里没有任何东西向电池发送指令，也没有任何内容在电路板上运行过。**
+**诚实性检查 - 今天真正能运行的部分：** 屏幕逻辑、设备模拟器和界面已编写并在电脑上测试（5 个主机程序），面向电路板的固件可以编译。**它从未在电路板上运行过，尚未连接服务器，这里没有任何东西向电池发送指令。**
 
 ---
 
@@ -41,7 +41,7 @@
 | 角色 | A.R.M.O.R. 的太阳能触摸屏（家族：Clients，上级：ARMOR-SERVER） |
 | 技术栈 | C++17 核心与模拟器、CMake；Python 检查 |
 | 测试 | 5 个主机程序 |
-| 电路板 | Guition JC1060P470C（ESP32-P4 搭配 ESP32-C6，7 英寸 1024 x 600）；尚无板级代码 |
+| 电路板 | Guition JC1060P470C（ESP32-P4 搭配 ESP32-C6，7 英寸 1024 x 600）；代码可编译，从未在板上运行 |
 | 运行环境 | 装有 CMake、C++17 编译器和 Python 3.11+ 的电脑 |
 | 真实硬件上 | 电路板上尚未运行任何内容 |
 | 许可证 | GPL-3.0-or-later |
@@ -56,10 +56,10 @@
 
 | 领域 | 状态 | 在这里的含义 |
 |---|---|---|
-| 软件 | 🟠 | 负责读取、判断和保护的核心已编写；固件尚未编写。 |
+| 软件 | 🟠 | 核心、界面和首版固件已编写；尚无服务器连接。 |
 | 测试 | 🟡 | 主机程序以及两项对照 ARMOR-COMMON 的检查；处于早期阶段。 |
-| 界面 | 🔴 | 尚未绘制任何界面。 |
-| 硬件 | 🔴 | 电路板没有代码，也没有运行过任何内容。 |
+| 界面 | 🟠 | 界面由电脑上的模拟器绘制；从未在面板上显示。 |
+| 硬件 | 🔴 | 固件可编译；电路板上尚未运行任何内容。 |
 | 安全 | 🟠 | PIN 与写入检查仅是经过测试的逻辑；没有独立审查。 |
 | 更新 | 🔴 | 尚无可更新的内容。 |
 | 集成 | 🔴 | 尚未连接 ARMOR-SERVER；所需的精简太阳能接口还不存在。 |
@@ -88,6 +88,8 @@
 * PIN 以加盐哈希保存，锁定时间递增，会话很短。
 * 仅当服务器允许、数据新鲜、PIN 已解锁且本人确认时，才提供电池操作。
 * 包含五个场景的模拟器，并对照消息模式进行检查。
+* 八种语言的 1024 x 600 界面，用与固件相同的代码在电脑上绘制。
+* 首日使用的电路板检查界面：芯片、内存、面板、触摸、I2C、有线网络、色条和四角。
 
 ## 🔒 安全与防护
 
@@ -120,12 +122,15 @@ python -I tools/armor_ci_validate.py
 | `test_pin_gate.cpp` | PIN 哈希、锁定、会话 |
 | `test_write_gate.cpp` | 阻止操作的每一种原因 |
 | `test_plant.cpp` | 五个场景 |
+| `test_screen_text.cpp` | 每条文字的八种语言 |
+| `test_screen_model.cpp` | 警报列表、数值、引脚 |
+| `check_font_glyphs.py` | 字体包含全部字符 |
 | `check_simulator.py` | 模拟器符合模式 |
 | `check_base_copies.py` | 共享文件与来源一致 |
 
 ## 🏗️ 构建与发布
 
-目前还没有可编译的固件，也没有发布版本。将来只在 GitHub Actions 中编译。
+尚未发布版本。固件仅在 GitHub Actions 中编译（工作流 `Firmware check (ESP32-P4)`）：每个变体是一个用 `esptool` 写入地址 0 的文件。从未在电路板上运行。工作流 `Screen pictures (simulator)` 负责绘制界面。
 
 ## 📂 仓库结构
 
@@ -139,27 +144,41 @@ python -I tools/armor_ci_validate.py
 ```text
 ARMOR-NODE-SOLAR-HMI/
 ├── core/
-│   ├── solar_data.hpp    从服务器读取的内容
-│   ├── solar_view.hpp    旧数据、级别、闪烁
-│   ├── pin_gate.hpp      屏幕的 PIN
-│   ├── write_gate.hpp    何时提供电池操作
-│   ├── json.hpp          来自共享固件基础
-│   └── hmac_sha256.hpp   来自共享固件基础
+│   ├── solar_data.hpp      从服务器读取的内容
+│   ├── solar_view.hpp      旧数据、级别、闪烁
+│   ├── pin_gate.hpp        屏幕的 PIN
+│   ├── write_gate.hpp      何时提供电池操作
+│   ├── screen_text.hpp     八种语言文字
+│   ├── screen_model.hpp    警报与数值
+│   ├── board_p4_jc1060.h   电路板引脚
+│   ├── json.hpp            来自共享固件基础
+│   └── hmac_sha256.hpp     来自共享固件基础
+├── main/
+│   ├── ui.cpp              太阳能页面
+│   ├── diag_ui.cpp         电路板检查
+│   ├── board.c             屏幕、触摸、网络
+│   ├── app_main.cpp        启动与日志
+│   └── fonts/              屏幕字体
 ├── simulator/
-│   ├── plant.hpp         五个场景
-│   └── main.cpp          打印应答
-├── tests/                主机测试与契约检查
-├── docs/                 设计与图片源文件
-├── tools/                共享检查
-├── images/               README 图片
-├── .github/              工作流与表单
-├── armor.project.json    清单
-├── CHANGELOG.md          变更记录
-├── LICENSE               GPL-3.0-or-later
-├── CONTRIBUTING.md       如何贡献
-├── CODE_OF_CONDUCT.md    行为准则
-├── SECURITY.md           漏洞报告
-└── SUPPORT.md            获取帮助
+│   ├── plant.hpp           五个场景
+│   ├── main.cpp            打印应答
+│   └── screens/            电脑上出图
+├── tests/                  主机测试与契约检查
+├── docs/                   设计与图片源文件
+├── CMakeLists.txt          固件工程
+├── sdkconfig.defaults      编译设置
+├── partitions.csv          闪存分区
+├── variants/               其他芯片或面板
+├── tools/                  共享检查
+├── images/                 README 图片
+├── .github/                工作流与表单
+├── armor.project.json      清单
+├── CHANGELOG.md            变更记录
+├── LICENSE                 GPL-3.0-or-later
+├── CONTRIBUTING.md         如何贡献
+├── CODE_OF_CONDUCT.md      行为准则
+├── SECURITY.md             漏洞报告
+└── SUPPORT.md              获取帮助
 ```
 
 </details>
@@ -168,15 +187,15 @@ ARMOR-NODE-SOLAR-HMI/
 
 **当前已知限制**
 
-* **它做什么**: 在电脑上读取服务器的太阳能应答、进行判断并保护 PIN。
-* **它不做什么**: 绘制界面、建立连接、发送指令或在电路板上运行。
+* **它做什么**: 读取并判断服务器的太阳能应答、保护 PIN、在电脑上绘制界面，并编译面向电路板的固件。
+* **它不做什么**: 连接服务器或 Wi-Fi、自我更新、发送指令，或在电路板上运行（从未尝试）。
 
 **下一步**
 
-* 在 ARMOR-SERVER 中为小屏幕提供精简的太阳能应答，先在 ARMOR-COMMON 中定义。
-* 用电脑上的模拟器以八种语言绘制 1024 x 600 界面。
+* 借助电路板检查界面在板上首次上电。
+* 在 ARMOR-SERVER 中提供精简的太阳能应答（先在 ARMOR-COMMON 中定义），并让屏幕连接它。
+* 通过 ESP32-C6 的 Wi-Fi、保存在闪存中的设置和更新。
 * 与 ARMOR-NODE-HMI 共享的板级层。
-* 在电路板上首次上电。
 
 ## 🌍 语言
 

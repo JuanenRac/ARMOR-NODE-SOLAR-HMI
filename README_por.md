@@ -28,7 +28,7 @@
 
 ---
 
-**Verificação de honestidade - o que funciona hoje:** A lógica do ecrã e um simulador de uma instalação estão escritos e testados num computador (5 programas de host). **Ainda não há firmware, ecrãs nem ligação a um servidor; nada aqui envia ordens a uma bateria e nada correu numa placa.**
+**Verificação de honestidade - o que funciona hoje:** A lógica do ecrã, um simulador de uma instalação e os ecrãs estão escritos e testados num computador (5 programas de host), e há um firmware para a placa que compila. **Nunca correu numa placa, ainda não há ligação a um servidor e nada aqui envia ordens a uma bateria.**
 
 ---
 
@@ -41,7 +41,7 @@
 | Função | Ecrã tátil solar do A.R.M.O.R. (família: Clients, principal: ARMOR-SERVER) |
 | Tecnologia | Núcleo e simulador em C++17, CMake; verificações em Python |
 | Testes | 5 programas de host |
-| Placa | Guition JC1060P470C (ESP32-P4 com ESP32-C6, 7 polegadas, 1024 x 600); ainda sem código de placa |
+| Placa | Guition JC1060P470C (ESP32-P4 com ESP32-C6, 7 polegadas, 1024 x 600); código que compila, nunca executado nela |
 | Funciona em | Um computador com CMake, um compilador C++17 e Python 3.11+ |
 | Em hardware real | Nada correu na placa |
 | Licença | GPL-3.0-or-later |
@@ -56,10 +56,10 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 
 | Área | Estado | O que significa aqui |
 |---|---|---|
-| Software | 🟠 | O núcleo que lê, avalia e protege está escrito; o firmware não. |
+| Software | 🟠 | Núcleo, ecrãs e um primeiro firmware escritos; sem ligação ao servidor. |
 | Testes | 🟡 | Programas de host e duas verificações face ao ARMOR-COMMON; fase inicial. |
-| Interface | 🔴 | Ainda não se desenha nenhum ecrã. |
-| Hardware | 🔴 | A placa não tem código e nada correu nela. |
+| Interface | 🟠 | Os ecrãs são desenhados por um simulador no computador; nunca no painel. |
+| Hardware | 🔴 | O firmware compila; nada correu na placa. |
 | Segurança | 🟠 | O PIN e a verificação de escrita são apenas lógica testada; sem revisão independente. |
 | Atualizações | 🔴 | Ainda não há nada para atualizar. |
 | Integração | 🔴 | Ainda sem ligação ao ARMOR-SERVER; a rota solar compacta necessária não existe. |
@@ -88,6 +88,8 @@ O [ARMOR-NODE-SOLAR](https://github.com/JuanenRac/ARMOR-NODE-SOLAR) lê os equip
 * PIN guardado como hash com sal, com bloqueios crescentes e sessão curta.
 * Uma operação na bateria só é proposta se o servidor permitir, os dados forem recentes, o PIN estiver aberto e a pessoa tiver confirmado.
 * Simulador com cinco cenários, verificado face aos esquemas das mensagens.
+* Ecrãs a 1024 x 600 em oito línguas, desenhados no computador com o mesmo código do firmware.
+* Ecrã de verificação para o primeiro dia: chip, memória, painel, toque, I2C, rede por cabo, barras de cor e cantos.
 
 ## 🔒 Segurança e proteção
 
@@ -120,12 +122,15 @@ python -I tools/armor_ci_validate.py
 | `test_pin_gate.cpp` | hash do PIN, bloqueios, sessão |
 | `test_write_gate.cpp` | cada motivo que impede uma operação |
 | `test_plant.cpp` | os cinco cenários |
+| `test_screen_text.cpp` | cada texto nas oito línguas |
+| `test_screen_model.cpp` | alarmes listados, números, pinos |
+| `check_font_glyphs.py` | os tipos de letra têm cada carácter |
 | `check_simulator.py` | o simulador cumpre os esquemas |
 | `check_base_copies.py` | os ficheiros partilhados coincidem com a origem |
 
 ## 🏗️ Compilação e publicação
 
-Ainda não há firmware para compilar nem release. Quando houver, será compilado apenas no GitHub Actions.
+Ainda não há release. O firmware é compilado apenas no GitHub Actions (workflow `Firmware check (ESP32-P4)`): cada variante é um ficheiro gravado no endereço 0 com `esptool`. Nunca correu numa placa. O workflow `Screen pictures (simulator)` desenha os ecrãs.
 
 ## 📂 Estrutura do repositório
 
@@ -139,27 +144,41 @@ Ainda não há firmware para compilar nem release. Quando houver, será compilad
 ```text
 ARMOR-NODE-SOLAR-HMI/
 ├── core/
-│   ├── solar_data.hpp    o que se lê do servidor
-│   ├── solar_view.hpp    dados antigos, níveis, intermitência
-│   ├── pin_gate.hpp      o PIN do ecrã
-│   ├── write_gate.hpp    quando propor uma operação
-│   ├── json.hpp          da base de firmware comum
-│   └── hmac_sha256.hpp   da base de firmware comum
+│   ├── solar_data.hpp      o que se lê do servidor
+│   ├── solar_view.hpp      dados antigos, níveis, intermitência
+│   ├── pin_gate.hpp        o PIN do ecrã
+│   ├── write_gate.hpp      quando propor uma operação
+│   ├── screen_text.hpp     textos em 8 línguas
+│   ├── screen_model.hpp    alarmes e números
+│   ├── board_p4_jc1060.h   pinos da placa
+│   ├── json.hpp            da base de firmware comum
+│   └── hmac_sha256.hpp     da base de firmware comum
+├── main/
+│   ├── ui.cpp              as páginas solares
+│   ├── diag_ui.cpp         verificação da placa
+│   ├── board.c             ecrã, toque, rede
+│   ├── app_main.cpp        arranque e registo
+│   └── fonts/              tipos de letra
 ├── simulator/
-│   ├── plant.hpp         cinco cenários
-│   └── main.cpp          imprime as respostas
-├── tests/                testes de host e de contrato
-├── docs/                 conceção e fontes das figuras
-├── tools/                verificações comuns
-├── images/               imagens dos README
-├── .github/              workflows e formulários
-├── armor.project.json    manifesto
-├── CHANGELOG.md          alterações
-├── LICENSE               GPL-3.0-or-later
-├── CONTRIBUTING.md       como contribuir
-├── CODE_OF_CONDUCT.md    código de conduta
-├── SECURITY.md           comunicar vulnerabilidades
-└── SUPPORT.md            obter ajuda
+│   ├── plant.hpp           cinco cenários
+│   ├── main.cpp            imprime as respostas
+│   └── screens/            imagens no PC
+├── tests/                  testes de host e de contrato
+├── docs/                   conceção e fontes das figuras
+├── CMakeLists.txt          projeto do firmware
+├── sdkconfig.defaults      definições de build
+├── partitions.csv          mapa da flash
+├── variants/               outro chip ou painel
+├── tools/                  verificações comuns
+├── images/                 imagens dos README
+├── .github/                workflows e formulários
+├── armor.project.json      manifesto
+├── CHANGELOG.md            alterações
+├── LICENSE                 GPL-3.0-or-later
+├── CONTRIBUTING.md         como contribuir
+├── CODE_OF_CONDUCT.md      código de conduta
+├── SECURITY.md             comunicar vulnerabilidades
+└── SUPPORT.md              obter ajuda
 ```
 
 </details>
@@ -168,15 +187,15 @@ ARMOR-NODE-SOLAR-HMI/
 
 **Limites conhecidos hoje**
 
-* **O que faz**: Lê a resposta solar do servidor, avalia o que diz e protege o PIN, num computador.
-* **O que não faz**: Desenhar ecrãs, ligar-se a nada, enviar ordens ou correr na placa.
+* **O que faz**: Lê a resposta solar do servidor, avalia-a, protege o PIN, desenha os ecrãs no computador e compila um firmware para a placa.
+* **O que não faz**: Ligar-se a um servidor ou ao Wi-Fi, atualizar-se, enviar uma ordem ou correr na placa (nunca tentado).
 
 **A seguir**
 
-* Uma resposta solar compacta no ARMOR-SERVER para ecrãs pequenos, definida primeiro no ARMOR-COMMON.
-* Os ecrãs a 1024 x 600 desenhados por um simulador no computador, em oito línguas.
+* O primeiro arranque na placa com o ecrã de verificação.
+* Uma resposta solar compacta no ARMOR-SERVER, definida primeiro no ARMOR-COMMON, e a ligação do ecrã a ela.
+* Wi-Fi pelo ESP32-C6, definições na flash e atualizações.
 * A camada de placa partilhada com o ARMOR-NODE-HMI.
-* O primeiro arranque na placa.
 
 ## 🌍 Idiomas
 

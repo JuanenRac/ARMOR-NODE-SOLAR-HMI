@@ -1,0 +1,10 @@
+# ARMOR-NODE-SOLAR-HMI partition table for the 16 MB flash: two application slots (updates over the network, later), the settings and a core dump.
+# Name,     Type, SubType,  Offset,    Size,      Flags
+nvs,        data, nvs,      0x9000,    0x10000,
+otadata,    data, ota,      0x19000,   0x2000,
+phy_init,   data, phy,      0x1b000,   0x1000,
+ota_0,      app,  ota_0,    0x20000,   0x600000,
+ota_1,      app,  ota_1,    0x620000,  0x600000,
+coredump,   data, coredump, 0xC20000,  0x20000,
+storage,    data, spiffs,   0xC40000,  0x3B0000,
+nvs_keys,   data, nvs_keys, 0xFF0000,  0x1000,

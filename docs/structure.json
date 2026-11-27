@@ -5,17 +5,17 @@
   "cards": [
     {
       "name": "core/",
-      "span": 2,
+      "span": 1,
       "accent": "a",
       "sub": {
-        "en": "the logic, with no board in it",
-        "es": "la lógica, sin nada de la placa",
-        "de": "die Logik, ohne Platine",
-        "fr": "la logique, sans la carte",
-        "it": "la logica, senza la scheda",
-        "ja": "ボードに依存しないロジック",
-        "zh": "与电路板无关的逻辑",
-        "pt": "a lógica, sem nada da placa"
+        "en": "logic without a board",
+        "es": "lógica sin placa",
+        "de": "Logik ohne Platine",
+        "fr": "logique sans carte",
+        "it": "logica senza scheda",
+        "ja": "基板に依存しない",
+        "zh": "与电路板无关",
+        "pt": "lógica sem placa"
       },
       "rows": [
         {
@@ -71,6 +71,45 @@
           }
         },
         {
+          "name": "screen_text.hpp",
+          "desc": {
+            "en": "words in 8 languages",
+            "es": "textos en 8 idiomas",
+            "de": "Texte in 8 Sprachen",
+            "fr": "textes en 8 langues",
+            "it": "testi in 8 lingue",
+            "ja": "8 言語の文言",
+            "zh": "八种语言文字",
+            "pt": "textos em 8 línguas"
+          }
+        },
+        {
+          "name": "screen_model.hpp",
+          "desc": {
+            "en": "alarms and numbers",
+            "es": "alarmas y cifras",
+            "de": "Alarme und Zahlen",
+            "fr": "alarmes et chiffres",
+            "it": "allarmi e cifre",
+            "ja": "警報と数値",
+            "zh": "警报与数值",
+            "pt": "alarmes e números"
+          }
+        },
+        {
+          "name": "board_p4_jc1060.h",
+          "desc": {
+            "en": "pins of the board",
+            "es": "pines de la placa",
+            "de": "Pins der Platine",
+            "fr": "broches de la carte",
+            "it": "pin della scheda",
+            "ja": "基板のピン",
+            "zh": "电路板引脚",
+            "pt": "pinos da placa"
+          }
+        },
+        {
           "name": "json.hpp",
           "desc": {
             "en": "from the shared firmware base",
@@ -94,6 +133,88 @@
             "ja": "共通ファームウェア基盤から",
             "zh": "来自共享固件基础",
             "pt": "da base de firmware comum"
+          }
+        }
+      ]
+    },
+    {
+      "name": "main/",
+      "span": 1,
+      "accent": "b",
+      "sub": {
+        "en": "screen and firmware",
+        "es": "pantalla y firmware",
+        "de": "Bildschirm, Firmware",
+        "fr": "écran et firmware",
+        "it": "schermo e firmware",
+        "ja": "画面とファーム",
+        "zh": "界面与固件",
+        "pt": "ecrã e firmware"
+      },
+      "rows": [
+        {
+          "name": "ui.cpp",
+          "desc": {
+            "en": "the solar pages",
+            "es": "las páginas solares",
+            "de": "die Solarseiten",
+            "fr": "les pages solaires",
+            "it": "le pagine solari",
+            "ja": "太陽光の各画面",
+            "zh": "太阳能页面",
+            "pt": "as páginas solares"
+          }
+        },
+        {
+          "name": "diag_ui.cpp",
+          "desc": {
+            "en": "the board check",
+            "es": "comprobación de placa",
+            "de": "der Platinentest",
+            "fr": "contrôle de la carte",
+            "it": "controllo scheda",
+            "ja": "基板の確認画面",
+            "zh": "电路板检查",
+            "pt": "verificação da placa"
+          }
+        },
+        {
+          "name": "board.c",
+          "desc": {
+            "en": "screen, touch, network",
+            "es": "pantalla, táctil, red",
+            "de": "Anzeige, Touch, Netz",
+            "fr": "écran, tactile, réseau",
+            "it": "schermo, tocco, rete",
+            "ja": "画面・タッチ・通信",
+            "zh": "屏幕、触摸、网络",
+            "pt": "ecrã, toque, rede"
+          }
+        },
+        {
+          "name": "app_main.cpp",
+          "desc": {
+            "en": "the start and the log",
+            "es": "arranque y registro",
+            "de": "Start und Protokoll",
+            "fr": "démarrage et journal",
+            "it": "avvio e registro",
+            "ja": "起動とログ",
+            "zh": "启动与日志",
+            "pt": "arranque e registo"
+          }
+        },
+        {
+          "name": "fonts/",
+          "desc": {
+            "en": "fonts of the screen",
+            "es": "fuentes de pantalla",
+            "de": "Schriften",
+            "fr": "polices de l'écran",
+            "it": "font dello schermo",
+            "ja": "画面フォント",
+            "zh": "屏幕字体",
+            "pt": "tipos de letra"
           }
         }
       ]
@@ -138,6 +259,19 @@
             "zh": "打印应答",
             "pt": "imprime as respostas"
           }
+        },
+        {
+          "name": "screens/",
+          "desc": {
+            "en": "pictures on a PC",
+            "es": "capturas en el PC",
+            "de": "Bilder am PC",
+            "fr": "images sur PC",
+            "it": "immagini al PC",
+            "ja": "PC で画面描画",
+            "zh": "电脑上出图",
+            "pt": "imagens no PC"
+          }
         }
       ]
     },
@@ -168,14 +302,14 @@
       "rows": [
         {
           "desc": {
-            "en": "five C++ programs",
-            "es": "cinco programas C++",
-            "de": "fünf C++-Programme",
-            "fr": "cinq programmes C++",
-            "it": "cinque programmi C++",
-            "ja": "C++ プログラム 5 本",
-            "zh": "五个 C++ 程序",
-            "pt": "cinco programas C++"
+            "en": "seven C++ programs",
+            "es": "siete programas C++",
+            "de": "sieben C++-Programme",
+            "fr": "sept programmes C++",
+            "it": "sette programmi C++",
+            "ja": "C++ プログラム 7 本",
+            "zh": "七个 C++ 程序",
+            "pt": "sete programas C++"
           }
         },
         {
@@ -257,6 +391,58 @@
         "pt": "primeiro nível"
       },
       "rows": [
+        {
+          "name": "CMakeLists.txt",
+          "desc": {
+            "en": "firmware project",
+            "es": "proyecto del firmware",
+            "de": "Firmware-Projekt",
+            "fr": "projet du firmware",
+            "it": "progetto firmware",
+            "ja": "ファーム構成",
+            "zh": "固件工程",
+            "pt": "projeto do firmware"
+          }
+        },
+        {
+          "name": "sdkconfig.defaults",
+          "desc": {
+            "en": "build settings",
+            "es": "ajustes de compilación",
+            "de": "Build-Vorgaben",
+            "fr": "réglages de build",
+            "it": "impostazioni build",
+            "ja": "ビルド設定",
+            "zh": "编译设置",
+            "pt": "definições de build"
+          }
+        },
+        {
+          "name": "partitions.csv",
+          "desc": {
+            "en": "flash layout",
+            "es": "reparto de la flash",
+            "de": "Flash-Aufteilung",
+            "fr": "plan de la flash",
+            "it": "mappa della flash",
+            "ja": "フラッシュ配置",
+            "zh": "闪存分区",
+            "pt": "mapa da flash"
+          }
+        },
+        {
+          "name": "variants/",
+          "desc": {
+            "en": "other chip or panel",
+            "es": "otro chip o panel",
+            "de": "anderer Chip, Panel",
+            "fr": "autre puce ou dalle",
+            "it": "altro chip o pannello",
+            "ja": "別チップ・パネル",
+            "zh": "其他芯片或面板",
+            "pt": "outro chip ou painel"
+          }
+        },
         {
           "name": "tools/",
           "desc": {
