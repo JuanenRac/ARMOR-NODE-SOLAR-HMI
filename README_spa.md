@@ -21,14 +21,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 o posterior">
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Lenguaje">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
-  <img src="https://img.shields.io/badge/Tests-5%20host%20programs-2ea44f.svg" alt="Pruebas">
+  <img src="https://img.shields.io/badge/Tests-7%20host%20programs-2ea44f.svg" alt="Pruebas">
   <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Madurez">
 </p>
 
 ---
 
-**Comprobación de honestidad - qué funciona hoy:** La lógica de la pantalla, un simulador de una instalación y las pantallas están escritos y probados en un ordenador (5 programas de host), y hay un firmware para la placa que compila. **Nunca ha corrido en una placa, todavía no hay conexión con un servidor y nada de aquí envía órdenes a una batería.**
+**Comprobación de honestidad - qué funciona hoy:** La lógica de la pantalla, un simulador de una instalación y las pantallas están escritos y probados en un ordenador (7 programas de host), y hay un firmware para la placa que compila. **Nunca ha corrido en una placa, todavía no hay conexión con un servidor y nada de aquí envía órdenes a una batería.**
 
 ---
 
@@ -40,7 +40,7 @@
 | Madurez | Andamiaje |
 | Función | Pantalla táctil solar de A.R.M.O.R. (familia: Clients, padre: ARMOR-SERVER) |
 | Tecnología | Núcleo y simulador en C++17, CMake; comprobaciones en Python |
-| Pruebas | 5 programas de host |
+| Pruebas | 7 programas de host |
 | Placa | Guition JC1060P470C (ESP32-P4 con ESP32-C6, 7 pulgadas, 1024 x 600); código que compila, nunca ejecutado en ella |
 | Funciona en | Un ordenador con CMake, un compilador C++17 y Python 3.11+ |
 | En hardware real | Nada ha corrido en la placa |

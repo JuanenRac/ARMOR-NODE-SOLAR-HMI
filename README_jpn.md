@@ -21,14 +21,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Language">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
-  <img src="https://img.shields.io/badge/Tests-5%20host%20programs-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-7%20host%20programs-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**正直さのチェック - 今日動いているもの:** 画面のロジック、設備シミュレータ、画面表示は作成済みでコンピュータ上でテストしており（ホストプログラム 5 本）、基板向けファームウェアはビルドできます。**基板上で動かしたことはなく、サーバーへの接続はまだなく、ここからバッテリーへ命令を送るものはありません。**
+**正直さのチェック - 今日動いているもの:** 画面のロジック、設備シミュレータ、画面表示は作成済みでコンピュータ上でテストしており（ホストプログラム 7 本）、基板向けファームウェアはビルドできます。**基板上で動かしたことはなく、サーバーへの接続はまだなく、ここからバッテリーへ命令を送るものはありません。**
 
 ---
 
@@ -40,7 +40,7 @@
 | 成熟度 | 足場段階 |
 | 役割 | A.R.M.O.R. の太陽光タッチ画面（ファミリー：Clients、親：ARMOR-SERVER） |
 | 技術 | C++17 のコアとシミュレータ、CMake、Python の検査 |
-| テスト | ホストプログラム 5 本 |
+| テスト | ホストプログラム 7 本 |
 | 基板 | Guition JC1060P470C（ESP32-P4 と ESP32-C6、7 インチ 1024 x 600）。コードはビルド可能、基板上では未実行 |
 | 動作環境 | CMake、C++17 コンパイラ、Python 3.11+ を備えた PC |
 | 実機で | 基板上では何も動いていません |

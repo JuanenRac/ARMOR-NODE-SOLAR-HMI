@@ -21,14 +21,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Language">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
-  <img src="https://img.shields.io/badge/Tests-5%20host%20programs-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-7%20host%20programs-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**诚实性检查 - 今天真正能运行的部分：** 屏幕逻辑、设备模拟器和界面已编写并在电脑上测试（5 个主机程序），面向电路板的固件可以编译。**它从未在电路板上运行过，尚未连接服务器，这里没有任何东西向电池发送指令。**
+**诚实性检查 - 今天真正能运行的部分：** 屏幕逻辑、设备模拟器和界面已编写并在电脑上测试（7 个主机程序），面向电路板的固件可以编译。**它从未在电路板上运行过，尚未连接服务器，这里没有任何东西向电池发送指令。**
 
 ---
 
@@ -40,7 +40,7 @@
 | 成熟度 | 雏形 |
 | 角色 | A.R.M.O.R. 的太阳能触摸屏（家族：Clients，上级：ARMOR-SERVER） |
 | 技术栈 | C++17 核心与模拟器、CMake；Python 检查 |
-| 测试 | 5 个主机程序 |
+| 测试 | 7 个主机程序 |
 | 电路板 | Guition JC1060P470C（ESP32-P4 搭配 ESP32-C6，7 英寸 1024 x 600）；代码可编译，从未在板上运行 |
 | 运行环境 | 装有 CMake、C++17 编译器和 Python 3.11+ 的电脑 |
 | 真实硬件上 | 电路板上尚未运行任何内容 |

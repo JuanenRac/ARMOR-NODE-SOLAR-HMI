@@ -21,14 +21,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Language">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
-  <img src="https://img.shields.io/badge/Tests-5%20host%20programs-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-7%20host%20programs-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**Honesty check - what runs today:** The logic behind the screen, a simulator of an installation and the screens are written and tested on a computer (5 host programs), and a firmware for the board compiles. **It has never run on a board, there is no connection to a server yet and nothing here sends an order to a battery.**
+**Honesty check - what runs today:** The logic behind the screen, a simulator of an installation and the screens are written and tested on a computer (7 host programs), and a firmware for the board compiles. **It has never run on a board, there is no connection to a server yet and nothing here sends an order to a battery.**
 
 ---
 
@@ -40,7 +40,7 @@
 | Maturity | Scaffolding |
 | Role | Solar touch screen of A.R.M.O.R. (family: Clients, parent: ARMOR-SERVER) |
 | Stack | C++17 core and simulator, CMake; Python checks |
-| Tests | 5 host programs |
+| Tests | 7 host programs |
 | Board | Guition JC1060P470C (ESP32-P4 with ESP32-C6, 7-inch 1024 x 600); code that compiles, never run on it |
 | Runs on | A computer with CMake, a C++17 compiler and Python 3.11+ |
 | On real hardware | Nothing has run on the board |
