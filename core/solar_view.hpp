@@ -2,6 +2,7 @@
 // Nothing here draws. An alarm is never said with colour or blinking alone: every level has an icon and a word.
 // Copyright (C) 2026 JuanenRac (Electro Hobby 3D). GPL-3.0-or-later.
 #pragma once
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -44,19 +45,32 @@ struct CellStats {
   std::size_t min_index = 0, max_index = 0;
 };
 
-inline std::optional<CellStats> cell_stats(const std::vector<double>& cells) {
-  if (cells.empty()) return std::nullopt;
+inline bool is_unread(const std::vector<int>& unread, std::size_t index) { return std::find(unread.begin(), unread.end(), static_cast<int>(index)) != unread.end(); }
+
+// The lowest and highest of the cells that are read: a cell the electronics do not read is not the lowest of the pack.
+inline std::optional<CellStats> cell_stats(const std::vector<double>& cells, const std::vector<int>& unread = {}) {
   CellStats stats;
-  stats.min_v = stats.max_v = cells.front();
-  for (std::size_t i = 1; i < cells.size(); ++i) {
-    if (cells[i] < stats.min_v) { stats.min_v = cells[i]; stats.min_index = i; }
-    if (cells[i] > stats.max_v) { stats.max_v = cells[i]; stats.max_index = i; }
+  bool any = false;
+  for (std::size_t i = 0; i < cells.size(); ++i) {
+    if (is_unread(unread, i)) continue;
+    if (!any || cells[i] < stats.min_v) { stats.min_v = cells[i]; stats.min_index = i; }
+    if (!any || cells[i] > stats.max_v) { stats.max_v = cells[i]; stats.max_index = i; }
+    any = true;
   }
+  if (!any) return std::nullopt;
   stats.delta_mv = static_cast<int>(std::lround((stats.max_v - stats.min_v) * 1000.0));
   return stats;
 }
 
-enum class Level { kOk = 0, kWarn = 1, kAlarm = 2 };
+// A notice, a protection or alarm, and a fault of the battery's electronics (worst): the fault is red and still, only an alarm blinks.
+enum class Level { kOk = 0, kWarn = 1, kAlarm = 2, kFault = 3 };
+
+// The level of a battery's own word, as Studio and the phone read it: High, Low and the like are notices, a word never seen is taken as a protection.
+inline Level state_level(const BatteryState& state) {
+  if (state.word == "SysError") return Level::kFault;
+  const bool notice = state.word == "High" || state.word == "Low" || state.word == "COCAlm" || state.word == "DOCAlm";
+  return notice && state.column != "system" ? Level::kWarn : Level::kAlarm;
+}
 
 inline Level worst(Level a, Level b) { return static_cast<int>(a) >= static_cast<int>(b) ? a : b; }
 
@@ -66,10 +80,13 @@ inline Level cell_level(double volts, const Thresholds& limits) {
 
 inline Level module_level(const Module& module, const Thresholds& limits) {
   if (!module.present) return Level::kWarn;
-  Level level = Level::kOk;
-  for (const double cell : module.cells_v) level = worst(level, cell_level(cell, limits));
-  if (module.temperature_c && (*module.temperature_c >= limits.temp_high_c || *module.temperature_c <= limits.temp_low_c)) level = Level::kAlarm;
-  const std::optional<CellStats> stats = cell_stats(module.cells_v);
+  Level level = module.cells_unread.empty() ? Level::kOk : Level::kFault;
+  for (std::size_t i = 0; i < module.cells_v.size(); ++i)
+    if (!is_unread(module.cells_unread, i)) level = worst(level, cell_level(module.cells_v[i], limits));
+  for (const BatteryState& state : module.states) level = worst(level, state_level(state));
+  if (!module.left_out.empty()) level = worst(level, Level::kWarn);
+  if (module.temperature_c && (*module.temperature_c >= limits.temp_high_c || *module.temperature_c <= limits.temp_low_c)) level = worst(level, Level::kAlarm);
+  const std::optional<CellStats> stats = cell_stats(module.cells_v, module.cells_unread);
   if (stats && stats->delta_mv >= limits.spread_warn_mv) level = worst(level, Level::kWarn);
   if (module.soc_percent && *module.soc_percent <= limits.soc_low_percent) level = worst(level, Level::kWarn);
   return level;
@@ -91,6 +108,7 @@ struct Mark {
 
 inline Mark mark_of(Level level) {
   switch (level) {
+    case Level::kFault: return {"fault", "level_fault"};
     case Level::kAlarm: return {"alert", "level_alarm"};
     case Level::kWarn: return {"warning", "level_warning"};
     default: return {"check", "level_ok"};

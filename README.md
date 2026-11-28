@@ -21,14 +21,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Language">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
-  <img src="https://img.shields.io/badge/Tests-7%20host%20programs-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-8%20host%20programs-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**Honesty check - what runs today:** The logic behind the screen, a simulator of an installation and the screens are written and tested on a computer (7 host programs), and a firmware for the board compiles. **It has never run on a board, there is no connection to a server yet and nothing here sends an order to a battery.**
+**Honesty check - what runs today:** The logic behind the screen, a simulator of an installation and the screens are written and tested on a computer (8 host programs), and a firmware for the board compiles. **It has never run on a board, there is no connection to a server yet and nothing here sends an order to a battery.**
 
 ---
 
@@ -40,7 +40,7 @@
 | Maturity | Scaffolding |
 | Role | Solar touch screen of A.R.M.O.R. (family: Clients, parent: ARMOR-SERVER) |
 | Stack | C++17 core and simulator, CMake; Python checks |
-| Tests | 7 host programs |
+| Tests | 8 host programs |
 | Board | Guition JC1060P470C (ESP32-P4 with ESP32-C6, 7-inch 1024 x 600); code that compiles, never run on it |
 | Runs on | A computer with CMake, a C++17 compiler and Python 3.11+ |
 | On real hardware | Nothing has run on the board |
@@ -62,7 +62,7 @@ Each line is one part of this repository and the light says how far it is today.
 | Hardware | 🔴 | The firmware compiles; nothing has run on the board. |
 | Security | 🟠 | PIN and write checks are tested logic only; no independent review. |
 | Updates | 🔴 | There is nothing to update yet. |
-| Integration | 🔴 | No link to ARMOR-SERVER yet; the compact solar route it needs does not exist. |
+| Integration | 🔴 | A reading link is tried on a computer against the simulator; the firmware does not use it yet. |
 | Documentation | 🟡 | README in eight languages and the design note. |
 
 ## 🎯 Overview
@@ -87,7 +87,8 @@ Each line is one part of this repository and the light says how far it is today.
 * Cells, modules and stacks have a level with an icon and a word; only an alarm blinks, at most twice a second.
 * A PIN kept as a salted hash, with growing locks and a short session.
 * A battery operation is offered only when the server allows it, the data is fresh, the PIN is open and the person confirmed.
-* A simulator with five scenarios, checked against the message schemas.
+* Who made the equipment, and what a battery says of itself in three levels: a notice, a protection and a fault of its electronics, which is red and still.
+* A simulator with six scenarios, checked against the message schemas.
 * Screens at 1024 x 600 in eight languages, drawn on a computer by the same code as the firmware.
 * A board check screen for the first day: chip, memory, panel, touch, I2C, cable network, colour bars and corners.
 
@@ -121,8 +122,9 @@ python -I tools/armor_ci_validate.py
 | `test_solar_view.cpp` | old data, levels, blinking |
 | `test_pin_gate.cpp` | PIN hash, locks, session |
 | `test_write_gate.cpp` | every reason that stops an operation |
-| `test_plant.cpp` | the five scenarios |
+| `test_plant.cpp` | the six scenarios |
 | `test_screen_text.cpp` | every word in the eight languages |
+| `test_server_link.cpp` | the reading of the server: cuts, refusals |
 | `test_screen_model.cpp` | the alarms listed, numbers, board pins |
 | `check_font_glyphs.py` | the fonts hold every character |
 | `check_simulator.py` | the simulator follows the schemas |
@@ -150,6 +152,7 @@ ARMOR-NODE-SOLAR-HMI/
 │   ├── write_gate.hpp      when a battery operation is offered
 │   ├── screen_text.hpp     words in 8 languages
 │   ├── screen_model.hpp    alarms and numbers
+│   ├── server_link.hpp     reads the server (not wired)
 │   ├── board_p4_jc1060.h   pins of the board
 │   ├── json.hpp            from the shared firmware base
 │   └── hmac_sha256.hpp     from the shared firmware base
@@ -160,7 +163,7 @@ ARMOR-NODE-SOLAR-HMI/
 │   ├── app_main.cpp        the start and the log
 │   └── fonts/              fonts of the screen
 ├── simulator/
-│   ├── plant.hpp           five scenarios
+│   ├── plant.hpp           six scenarios
 │   ├── main.cpp            prints the answers
 │   └── screens/            pictures on a PC
 ├── tests/                  host tests and contract checks
@@ -193,7 +196,7 @@ ARMOR-NODE-SOLAR-HMI/
 **Next**
 
 * The first power-up on the board with the board check screen.
-* A compact solar answer in ARMOR-SERVER, defined first in ARMOR-COMMON, and the link of the screen to it.
+* The sign-in of the panel account and the reading link in the firmware.
 * Wi-Fi through the ESP32-C6, settings kept in flash and updates.
 * The board layer shared with ARMOR-NODE-HMI.
 

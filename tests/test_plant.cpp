@@ -59,5 +59,16 @@ int main() {
   CHECK(silent.batteries.front().stale && silent.inverters.front().stale);
   CHECK(silent.totals.stale == 2 && !silent.totals.soc_percent.has_value() && !silent.totals.battery_w.has_value());
 
+  // three cells not read: a fault of the electronics, red and still, and not the lowest cells of the pack
+  const Snapshot bms = read(sim::Scenario::kBmsFault);
+  const Module& third = bms.batteries.front().stack[2];
+  CHECK(third.cells_unread.size() == 3 && third.cells_unread.front() == 3);
+  CHECK(module_level(third, limits) == Level::kFault && battery_level(bms.batteries.front(), limits) == Level::kFault);
+  const auto read_cells = cell_stats(third.cells_v, third.cells_unread);
+  CHECK(read_cells && read_cells->min_v > 3.0 && read_cells->delta_mv < limits.spread_warn_mv);
+  CHECK(module_level(bms.batteries.front().stack[3], limits) == Level::kWarn);   // a figure left out
+  CHECK(bms.batteries.front().maker.name == "Pylontech" && !bms.batteries.front().maker.deduced);
+  CHECK(bms.inverters.front().maker.name == "Voltronic" && bms.inverters.front().maker.deduced);
+
   FINISH("plant");
 }

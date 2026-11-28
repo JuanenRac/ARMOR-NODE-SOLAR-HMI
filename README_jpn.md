@@ -21,14 +21,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Language">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
-  <img src="https://img.shields.io/badge/Tests-7%20host%20programs-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-8%20host%20programs-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**正直さのチェック - 今日動いているもの:** 画面のロジック、設備シミュレータ、画面表示は作成済みでコンピュータ上でテストしており（ホストプログラム 7 本）、基板向けファームウェアはビルドできます。**基板上で動かしたことはなく、サーバーへの接続はまだなく、ここからバッテリーへ命令を送るものはありません。**
+**正直さのチェック - 今日動いているもの:** 画面のロジック、設備シミュレータ、画面表示は作成済みでコンピュータ上でテストしており（ホストプログラム 8 本）、基板向けファームウェアはビルドできます。**基板上で動かしたことはなく、サーバーへの接続はまだなく、ここからバッテリーへ命令を送るものはありません。**
 
 ---
 
@@ -40,7 +40,7 @@
 | 成熟度 | 足場段階 |
 | 役割 | A.R.M.O.R. の太陽光タッチ画面（ファミリー：Clients、親：ARMOR-SERVER） |
 | 技術 | C++17 のコアとシミュレータ、CMake、Python の検査 |
-| テスト | ホストプログラム 7 本 |
+| テスト | ホストプログラム 8 本 |
 | 基板 | Guition JC1060P470C（ESP32-P4 と ESP32-C6、7 インチ 1024 x 600）。コードはビルド可能、基板上では未実行 |
 | 動作環境 | CMake、C++17 コンパイラ、Python 3.11+ を備えた PC |
 | 実機で | 基板上では何も動いていません |
@@ -62,7 +62,7 @@
 | ハードウェア | 🔴 | ファームウェアはビルド可能。基板上では何も動いていません。 |
 | セキュリティ | 🟠 | PIN と書き込み判定はテスト済みロジックのみ。第三者レビューなし。 |
 | アップデート | 🔴 | 更新する対象はまだありません。 |
-| 連携 | 🔴 | ARMOR-SERVER との接続は未実装。必要な簡潔な太陽光ルートもありません。 |
+| 連携 | 🔴 | 読み取り接続はコンピュータ上でシミュレータに対して試験済み。ファームウェアはまだ使っていません。 |
 | ドキュメント | 🟡 | 8 言語の README と設計メモ。 |
 
 ## 🎯 概要
@@ -87,7 +87,8 @@
 * セル、モジュール、スタックにはアイコンと言葉付きのレベルがあり、点滅するのは警報のみで毎秒 2 回までです。
 * PIN はソルト付きハッシュで保存し、ロックは次第に長くなり、セッションは短時間です。
 * バッテリー操作は、サーバーが許可し、データが新しく、PIN が開かれ、本人が確認した場合のみ提示します。
-* 5 つのシナリオを持つシミュレータ。メッセージスキーマと照合します。
+* 機器の製造元と、電池が伝える内容を注意・保護・回路故障の 3 段階で表示します。回路故障は点滅しない赤です。
+* 6 つのシナリオを持つシミュレータ。メッセージスキーマと照合します。
 * 1024 x 600 の画面を 8 言語で表示。ファームウェアと同じコードをコンピュータ上で描画します。
 * 初日用の基板確認画面：チップ、メモリ、パネル、タッチ、I2C、有線ネットワーク、カラーバーと四隅。
 
@@ -121,8 +122,9 @@ python -I tools/armor_ci_validate.py
 | `test_solar_view.cpp` | 古いデータ、レベル、点滅 |
 | `test_pin_gate.cpp` | PIN のハッシュ、ロック、セッション |
 | `test_write_gate.cpp` | 操作を止めるすべての理由 |
-| `test_plant.cpp` | 5 つのシナリオ |
+| `test_plant.cpp` | 6 つのシナリオ |
 | `test_screen_text.cpp` | 全文言の 8 言語 |
+| `test_server_link.cpp` | サーバー読取：切断と拒否 |
 | `test_screen_model.cpp` | 警報一覧、数値、ピン |
 | `check_font_glyphs.py` | フォントに全文字がある |
 | `check_simulator.py` | シミュレータがスキーマに従う |
@@ -150,6 +152,7 @@ ARMOR-NODE-SOLAR-HMI/
 │   ├── write_gate.hpp      電池操作を提示する条件
 │   ├── screen_text.hpp     8 言語の文言
 │   ├── screen_model.hpp    警報と数値
+│   ├── server_link.hpp     サーバー読取 (未接続)
 │   ├── board_p4_jc1060.h   基板のピン
 │   ├── json.hpp            共通ファームウェア基盤から
 │   └── hmac_sha256.hpp     共通ファームウェア基盤から
@@ -160,7 +163,7 @@ ARMOR-NODE-SOLAR-HMI/
 │   ├── app_main.cpp        起動とログ
 │   └── fonts/              画面フォント
 ├── simulator/
-│   ├── plant.hpp           5 つのシナリオ
+│   ├── plant.hpp           6 つのシナリオ
 │   ├── main.cpp            応答を出力
 │   └── screens/            PC で画面描画
 ├── tests/                  ホストテストと契約の検査
@@ -193,7 +196,7 @@ ARMOR-NODE-SOLAR-HMI/
 **今後**
 
 * 基板確認画面を使った基板での初回起動。
-* 先に ARMOR-COMMON で定義する ARMOR-SERVER の簡潔な太陽光応答と、画面からの接続。
+* パネルアカウントのサインインと、ファームウェアでの読み取り接続。
 * ESP32-C6 経由の Wi-Fi、フラッシュへの設定保存、更新。
 * ARMOR-NODE-HMI と共有する基板レイヤー。
 

@@ -45,7 +45,7 @@ jobs:
           mkdir -p shots
           ./build/screens/solar_screens shots | tee shots/result.txt
           grep -q '^SCREENS=PASS languages=8$' shots/result.txt
-          test "$(ls shots/*.ppm | wc -l)" -eq 96
+          test "$(ls shots/*.ppm | wc -l)" -eq 104
 
       - name: Turn them into small PNG files
         shell: bash

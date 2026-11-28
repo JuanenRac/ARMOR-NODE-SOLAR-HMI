@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The maker and the states of the batteries are drawn:** the module cards, the cells page and the inverters say who made the equipment (saying when it was deduced), and what a battery says of itself comes in three levels: a notice, a protection or alarm, and a fault of its electronics (SysError or cells it does not read), red and still. Cells that are not read are drawn as `--` and no longer count as the lowest of the pack; figures the node left out are listed. Drawn by the simulator only.
+- **A reading link to the server, tried on a computer (`core/server_link.hpp`):** the list of `GET /api/v1/panel/solar` and then each battery, one at a time; a cut keeps the last reading until it grows old, a refusal says whether to sign in or to turn `panel.solar` on, and a battery whose own answer fails is shown as old and without modules. The firmware does not use it yet.
+- **A simulated fault of a battery's electronics:** a sixth scenario with cells that are not read, the battery's own words and a figure left out.
+
 ## [0.0.2] - First release, never run on a board
 
 - **The shared tools read the output of processes as UTF-8:** `tools/status_lights.py`, `tools/sync_manifests.py` and `tools/universal_readme_check.py` are the current copies; on Windows a character outside the code page no longer breaks a check.

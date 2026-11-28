@@ -29,6 +29,7 @@ int main() {
     CHECK(text::known_key(block_key(block)));
   for (const double watts : {-100.0, 0.0, 100.0}) CHECK(text::known_key(flow_key(watts)));
   CHECK(text::known_key(flow_key(std::nullopt)));
-  for (const Level level : {Level::kOk, Level::kWarn, Level::kAlarm}) CHECK(text::known_key(mark_of(level).word));
+  for (const Level level : {Level::kOk, Level::kWarn, Level::kAlarm, Level::kFault}) CHECK(text::known_key(mark_of(level).word));
+  for (const char* key : {"bms_fault", "bms_protect", "bms_notice", "left_out", "deduced"}) CHECK(text::known_key(key));
   FINISH("test_screen_text");
 }

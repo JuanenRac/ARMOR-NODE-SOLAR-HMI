@@ -97,6 +97,19 @@
           }
         },
         {
+          "name": "server_link.hpp",
+          "desc": {
+            "en": "reads the server (not wired)",
+            "es": "lee el servidor (sin conectar)",
+            "de": "liest den Server (nicht verbunden)",
+            "fr": "lit le serveur (pas branché)",
+            "it": "legge il server (non collegato)",
+            "ja": "サーバー読取 (未接続)",
+            "zh": "读取服务器 (未接入)",
+            "pt": "lê o servidor (por ligar)"
+          }
+        },
+        {
           "name": "board_p4_jc1060.h",
           "desc": {
             "en": "pins of the board",
@@ -237,14 +250,14 @@
         {
           "name": "plant.hpp",
           "desc": {
-            "en": "five scenarios",
-            "es": "cinco escenarios",
-            "de": "fünf Szenarien",
-            "fr": "cinq scénarios",
-            "it": "cinque scenari",
-            "ja": "5 つのシナリオ",
-            "zh": "五个场景",
-            "pt": "cinco cenários"
+            "en": "six scenarios",
+            "es": "seis escenarios",
+            "de": "sechs Szenarien",
+            "fr": "six scénarios",
+            "it": "sei scenari",
+            "ja": "6 つのシナリオ",
+            "zh": "六个场景",
+            "pt": "seis cenários"
           }
         },
         {

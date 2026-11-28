@@ -21,14 +21,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 o successiva">
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Linguaggio">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
-  <img src="https://img.shields.io/badge/Tests-7%20host%20programs-2ea44f.svg" alt="Test">
+  <img src="https://img.shields.io/badge/Tests-8%20host%20programs-2ea44f.svg" alt="Test">
   <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Versione">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturità">
 </p>
 
 ---
 
-**Controllo di onestà - cosa funziona oggi:** La logica dello schermo, un simulatore di impianto e le schermate sono scritti e provati su un computer (7 programmi host), e un firmware per la scheda si compila. **Non è mai girato su una scheda, non c'è ancora connessione a un server e nulla qui invia ordini a una batteria.**
+**Controllo di onestà - cosa funziona oggi:** La logica dello schermo, un simulatore di impianto e le schermate sono scritti e provati su un computer (8 programmi host), e un firmware per la scheda si compila. **Non è mai girato su una scheda, non c'è ancora connessione a un server e nulla qui invia ordini a una batteria.**
 
 ---
 
@@ -40,7 +40,7 @@
 | Maturità | Impalcatura |
 | Ruolo | Schermo touch solare di A.R.M.O.R. (famiglia: Clients, genitore: ARMOR-SERVER) |
 | Tecnologia | Nucleo e simulatore in C++17, CMake; controlli in Python |
-| Test | 7 programmi host |
+| Test | 8 programmi host |
 | Scheda | Guition JC1060P470C (ESP32-P4 con ESP32-C6, 7 pollici, 1024 x 600); codice che si compila, mai eseguito su di essa |
 | Gira su | Un computer con CMake, un compilatore C++17 e Python 3.11+ |
 | Su hardware reale | Nulla è girato sulla scheda |
@@ -62,7 +62,7 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 | Hardware | 🔴 | Il firmware si compila; nulla è girato sulla scheda. |
 | Sicurezza | 🟠 | PIN e controllo di scrittura sono solo logica provata; nessuna revisione indipendente. |
 | Aggiornamenti | 🔴 | Non c'è ancora nulla da aggiornare. |
-| Integrazione | 🔴 | Nessun collegamento con ARMOR-SERVER; la rotta solare compatta necessaria non esiste. |
+| Integrazione | 🔴 | Un collegamento di lettura è provato al computer con il simulatore; il firmware non lo usa ancora. |
 | Documentazione | 🟡 | README in otto lingue e la nota di progetto. |
 
 ## 🎯 Panoramica
@@ -87,7 +87,8 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 * Celle, moduli e batterie hanno un livello con icona e parola; lampeggia solo un allarme, al massimo due volte al secondo.
 * PIN conservato come hash con sale, con blocchi crescenti e sessione breve.
 * Un'operazione sulla batteria è proposta solo se il server la consente, i dati sono recenti, il PIN è aperto e la persona ha confermato.
-* Simulatore con cinque scenari, verificato con gli schemi dei messaggi.
+* Chi ha prodotto l'apparecchio e cosa dice la batteria su tre livelli: avviso, protezione e guasto dell'elettronica, in rosso fisso.
+* Simulatore con sei scenari, verificato con gli schemi dei messaggi.
 * Schermate 1024 x 600 in otto lingue, disegnate al computer dallo stesso codice del firmware.
 * Schermata di controllo per il primo giorno: chip, memoria, pannello, tocco, I2C, rete via cavo, barre di colore e angoli.
 
@@ -121,8 +122,9 @@ python -I tools/armor_ci_validate.py
 | `test_solar_view.cpp` | dati vecchi, livelli, lampeggio |
 | `test_pin_gate.cpp` | hash del PIN, blocchi, sessione |
 | `test_write_gate.cpp` | ogni motivo che blocca un'operazione |
-| `test_plant.cpp` | i cinque scenari |
+| `test_plant.cpp` | i sei scenari |
 | `test_screen_text.cpp` | ogni testo nelle otto lingue |
+| `test_server_link.cpp` | la lettura del server: interruzioni, rifiuti |
 | `test_screen_model.cpp` | allarmi elencati, cifre, pin |
 | `check_font_glyphs.py` | i font hanno ogni carattere |
 | `check_simulator.py` | il simulatore rispetta gli schemi |
@@ -150,6 +152,7 @@ ARMOR-NODE-SOLAR-HMI/
 │   ├── write_gate.hpp      quando proporre un'operazione
 │   ├── screen_text.hpp     testi in 8 lingue
 │   ├── screen_model.hpp    allarmi e cifre
+│   ├── server_link.hpp     legge il server (non collegato)
 │   ├── board_p4_jc1060.h   pin della scheda
 │   ├── json.hpp            dalla base firmware comune
 │   └── hmac_sha256.hpp     dalla base firmware comune
@@ -160,7 +163,7 @@ ARMOR-NODE-SOLAR-HMI/
 │   ├── app_main.cpp        avvio e registro
 │   └── fonts/              font dello schermo
 ├── simulator/
-│   ├── plant.hpp           cinque scenari
+│   ├── plant.hpp           sei scenari
 │   ├── main.cpp            stampa le risposte
 │   └── screens/            immagini al PC
 ├── tests/                  test host e controlli di contratto
@@ -193,7 +196,7 @@ ARMOR-NODE-SOLAR-HMI/
 **Prossimi passi**
 
 * La prima accensione sulla scheda con la schermata di controllo.
-* Una risposta solare compatta in ARMOR-SERVER, definita prima in ARMOR-COMMON, e il collegamento dello schermo.
+* L'accesso dell'account del pannello e il collegamento di lettura nel firmware.
 * Wi-Fi tramite l'ESP32-C6, impostazioni in flash e aggiornamenti.
 * Lo strato di scheda condiviso con ARMOR-NODE-HMI.
 

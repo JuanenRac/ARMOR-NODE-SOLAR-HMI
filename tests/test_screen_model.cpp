@@ -61,6 +61,20 @@ int main() {
   CHECK(has(items, "module_missing", Level::kWarn));
   CHECK(items.front().level == Level::kAlarm);
 
+  const std::vector<AlarmItem> bms = alarms_in(sim::Scenario::kBmsFault);
+  CHECK(!bms.empty() && bms.front().level == Level::kFault && std::string(bms.front().key) == "bms_fault");
+  CHECK(bms.front().module == 3 && bms.front().cell == 4 && bms.front().detail == "0 V");
+  CHECK(has(bms, "bms_protect", Level::kAlarm) && has(bms, "bms_notice", Level::kWarn) && has(bms, "left_out", Level::kWarn));
+  CHECK(!has(bms, "cell_low", Level::kAlarm) && !has(bms, "spread_high", Level::kWarn) && !has(bms, "battery_alarm", Level::kAlarm));
+
+  CHECK(maker_text(Maker{}, "deduced").empty());
+  CHECK(maker_text(Maker{"Pylontech", false}, "deduced") == "Pylontech");
+  CHECK(maker_text(Maker{"Daly", true}, "deducido") == "Daly (deducido)");
+  Battery stack;
+  stack.stack.resize(2);
+  stack.stack[1].maker = Maker{"Pylontech", false};
+  CHECK(stack_maker(stack).name == "Pylontech");
+
   CHECK(format_power(std::nullopt) == "--");
   CHECK(format_power(640.4) == "640 W");
   CHECK(format_power(1850.0) == "1.85 kW");
