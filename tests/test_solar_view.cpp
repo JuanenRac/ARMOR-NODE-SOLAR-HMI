@@ -71,5 +71,31 @@ int main() {
   // a half period shorter than a quarter of a second is not used: at most two blinks a second
   CHECK(lit(Level::kAlarm, 249, 10) && !lit(Level::kAlarm, 250, 10) && lit(Level::kAlarm, 500, 10));
 
+  CHECK(state_level({"base", "SysError", -1}) == Level::kFault);
+  CHECK(state_level({"voltage", "High", -1}) == Level::kWarn && state_level({"current", "DOCAlm", -1}) == Level::kWarn);
+  CHECK(state_level({"system", "High", -1}) == Level::kAlarm);
+  CHECK(state_level({"voltage", "OV", 3}) == Level::kAlarm && state_level({"voltage", "NeverSeen", -1}) == Level::kAlarm);
+  CHECK(worst(Level::kAlarm, Level::kFault) == Level::kFault);
+  CHECK(lit(Level::kFault, 500));   // a fault never blinks
+  CHECK(std::strcmp(mark_of(Level::kFault).word, "level_fault") == 0 && std::strcmp(mark_of(Level::kFault).icon, "fault") == 0);
+
+  Module said;
+  said.present = true;
+  said.cells_v = {3.30, 3.31, 0.0};
+  said.cells_unread = {2};
+  CHECK(module_level(said, limits) == Level::kFault);
+  const auto only_read = cell_stats(said.cells_v, said.cells_unread);
+  CHECK(only_read && only_read->min_index == 0 && only_read->delta_mv == 10);
+  CHECK(!cell_stats({0.0}, {0}).has_value());
+  said.cells_unread.clear();
+  said.cells_v = {3.30, 3.31};
+  said.states = {{"voltage", "High", -1}};
+  CHECK(module_level(said, limits) == Level::kWarn);
+  said.states = {{"voltage", "OV", 1}};
+  CHECK(module_level(said, limits) == Level::kAlarm);
+  said.temperature_c = 80.0;
+  said.states = {{"base", "SysError", -1}};
+  CHECK(module_level(said, limits) == Level::kFault);   // a hot module does not lower a fault to an alarm
+
   FINISH("solar_view");
 }

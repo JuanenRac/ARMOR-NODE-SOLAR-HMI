@@ -125,6 +125,11 @@ void take_language(const std::string& directory, const std::string& language) {
   ui::show(ui::Page::kAlarms);
   save(directory, language, "alarms");
 
+  // the electronics of a battery fail: cells not read, its own words, and a figure left out
+  load(sim::Scenario::kBmsFault);
+  ui::show(ui::Page::kCells, 0, 3);
+  save(directory, language, "bms_fault");
+
   // the operations: offered here as a server that allows them would
   load(sim::Scenario::kNormal);
   g_state.server_allows = true;

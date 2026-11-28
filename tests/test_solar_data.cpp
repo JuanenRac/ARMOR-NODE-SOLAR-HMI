@@ -86,5 +86,16 @@ int main() {
   CHECK(read_snapshot("nonsense", snapshot) == ReadError::kNotJson);
   CHECK(snapshot.inverters.empty() && snapshot.batteries.empty());
 
+  // the maker and the states: only what is well formed is taken
+  const std::string states =
+      "{\"node_id\":\"a\",\"device\":\"b\",\"kind\":\"battery\",\"stale\":false,\"reading\":{\"manufacturer\":\"Daly\",\"manufacturer_source\":\"deduced\",\"stack\":[{\"n\":1,\"present\":true,"
+      "\"flags\":[{\"column\":\"voltage\",\"word\":\"UV\",\"cell\":2},{\"column\":\"\",\"word\":\"x\"},7],\"cells_unread\":[1,99,-1],\"left_out\":[\"current\",4]}]}}";
+  CHECK(read_snapshot(answer(states), snapshot) == ReadError::kNone);
+  CHECK(snapshot.batteries.size() == 1);
+  const Battery& said = snapshot.batteries.front();
+  CHECK(said.maker.name == "Daly" && said.maker.deduced);
+  CHECK(said.stack.size() == 1 && said.stack[0].states.size() == 1 && said.stack[0].states[0].cell == 2);
+  CHECK(said.stack[0].cells_unread.size() == 1 && said.stack[0].left_out.size() == 1);
+
   FINISH("solar_data");
 }

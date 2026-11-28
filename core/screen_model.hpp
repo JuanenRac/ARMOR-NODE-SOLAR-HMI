@@ -44,6 +44,20 @@ inline std::string format_value(const Reading& value, int places, const char* un
 
 inline std::string format_percent(const Reading& value) { return value ? format_number(*value, 0) + " %" : std::string("--"); }
 
+// "Pylon", or "Daly (deduced)" with the word given; empty when the maker is not known.
+inline std::string maker_text(const Maker& maker, const std::string& deduced_word) {
+  if (maker.name.empty()) return "";
+  return maker.deduced ? maker.name + " (" + deduced_word + ")" : maker.name;
+}
+
+// The maker of a stack: its own, or that of its first module that says one.
+inline Maker stack_maker(const Battery& battery) {
+  if (!battery.maker.name.empty()) return battery.maker;
+  for (const Module& module : battery.stack)
+    if (!module.maker.name.empty()) return module.maker;
+  return Maker{};
+}
+
 // The key of the word for the mode of an inverter; a mode the screen does not know says "unknown".
 inline std::string mode_key(const std::string& mode) {
   for (const char* known : {"power_on", "standby", "line", "battery", "fault", "power_saving", "shutdown"})
@@ -78,12 +92,23 @@ inline void add_module_alarms(std::vector<AlarmItem>& out, const std::string& de
     out.push_back({Level::kWarn, "module_missing", device, module.n, 0, ""});
     return;
   }
+  // what the battery itself says: the cells its electronics do not read, then each state that is not normal
+  for (const int cell : module.cells_unread) out.push_back({Level::kFault, "bms_fault", device, module.n, cell + 1, "0 V"});
+  for (const BatteryState& state : module.states) {
+    const Level level = state_level(state);
+    out.push_back({level, level == Level::kFault ? "bms_fault" : level == Level::kAlarm ? "bms_protect" : "bms_notice", device, module.n, state.cell + 1, state.column + " " + state.word});
+  }
+  if (!module.left_out.empty()) {
+    std::string names;
+    for (const std::string& name : module.left_out) names += (names.empty() ? "" : ", ") + name;
+    out.push_back({Level::kWarn, "left_out", device, module.n, 0, names});
+  }
   for (std::size_t c = 0; c < module.cells_v.size(); ++c) {
     const double volts = module.cells_v[c];
-    if (cell_level(volts, limits) != Level::kAlarm) continue;
+    if (is_unread(module.cells_unread, c) || cell_level(volts, limits) != Level::kAlarm) continue;
     out.push_back({Level::kAlarm, volts >= limits.cell_high_v ? "cell_high" : "cell_low", device, module.n, static_cast<int>(c) + 1, format_number(volts, 3) + " V"});
   }
-  const std::optional<CellStats> stats = cell_stats(module.cells_v);
+  const std::optional<CellStats> stats = cell_stats(module.cells_v, module.cells_unread);
   if (stats && stats->delta_mv >= limits.spread_warn_mv) out.push_back({Level::kWarn, "spread_high", device, module.n, 0, format_number(stats->delta_mv, 0) + " mV"});
   if (module.temperature_c && (*module.temperature_c >= limits.temp_high_c || *module.temperature_c <= limits.temp_low_c))
     out.push_back({Level::kAlarm, "temp_out", device, module.n, 0, format_number(*module.temperature_c, 1) + " °C"});
@@ -104,7 +129,7 @@ inline std::vector<AlarmItem> alarms_of(const Snapshot& snapshot, const Threshol
     for (const Module& module : battery.stack) detail::add_module_alarms(out, device, module, limits);
     if (battery.soc_percent && *battery.soc_percent <= limits.soc_low_percent) out.push_back({Level::kWarn, "charge_low", device, 0, 0, format_percent(battery.soc_percent)});
     // the battery's own alarm is listed when nothing above already says what is wrong
-    const bool said = std::any_of(out.begin() + static_cast<std::ptrdiff_t>(before), out.end(), [](const AlarmItem& item) { return item.level == Level::kAlarm; });
+    const bool said = std::any_of(out.begin() + static_cast<std::ptrdiff_t>(before), out.end(), [](const AlarmItem& item) { return item.level >= Level::kAlarm; });
     if ((battery.alarm || battery.protecting) && !said) out.push_back({Level::kAlarm, "battery_alarm", device, 0, 0, ""});
   }
   for (const Inverter& inverter : snapshot.inverters) {

@@ -11,7 +11,7 @@
 
 namespace armor::solarhmi::sim {
 
-enum class Scenario { kNormal, kLowCharge, kCellHigh, kInverterFault, kNodeSilent };
+enum class Scenario { kNormal, kLowCharge, kCellHigh, kInverterFault, kNodeSilent, kBmsFault };
 
 struct Named {
   Scenario scenario;
@@ -22,7 +22,8 @@ inline constexpr Named kScenarios[] = {{Scenario::kNormal, "normal"},
                                        {Scenario::kLowCharge, "low-charge"},
                                        {Scenario::kCellHigh, "cell-high"},
                                        {Scenario::kInverterFault, "inverter-fault"},
-                                       {Scenario::kNodeSilent, "node-silent"}};
+                                       {Scenario::kNodeSilent, "node-silent"},
+                                       {Scenario::kBmsFault, "bms-fault"}};
 
 constexpr int kModules = 4;
 constexpr int kCells = 15;
@@ -57,7 +58,8 @@ inline std::string server_answer(Scenario scenario, std::uint32_t step = 0) {
     for (int c = 0; c < kCells; ++c) {
       double volts = base_cell + 0.002 * jitter(step * 97u + static_cast<std::uint32_t>(m * kCells + c));
       if (scenario == Scenario::kCellHigh && m == 1 && c == 6) volts = 3.640;
-      cells[m][c] = volts;
+      const bool unread = scenario == Scenario::kBmsFault && m == 2 && c >= 3 && c <= 5;   // three cells the electronics do not read
+      cells[m][c] = unread ? 0.0 : volts;
       module_v[m] += volts;
       if (volts < cell_min) cell_min = volts;
       if (volts > cell_max) cell_max = volts;
@@ -83,6 +85,7 @@ inline std::string server_answer(Scenario scenario, std::uint32_t step = 0) {
   out.key("pv_v").number(pv > 0 ? 312.0 : 0.0, 1).key("pv_a").number(pv > 0 ? pv / 312.0 : 0.0, 1).key("pv_w").number(pv, 0);
   out.key("heatsink_c").number(fault ? 88.0 : 41.0, 0);
   out.field("ac_charging", false).field("pv_charging", pv > 0).field("load_on", !fault);
+  out.field("manufacturer", "Voltronic").field("manufacturer_source", "deduced");
   out.key("warnings").begin_array();
   if (fault) out.string("over_temperature");
   out.end_array().end_object().end_object();
@@ -91,6 +94,7 @@ inline std::string server_answer(Scenario scenario, std::uint32_t step = 0) {
   out.field("stale", silent).field("example", false).field("received_at", "1970-01-01T00:00:00.000Z");
   out.key("reading").begin_object().field("kind", "battery").field("node_id", "solar-sim").field("device", "stack-1").field("timestamp_ms", stamp);
   out.field("modules", kModules).field("state", current < 0 ? "discharging" : "charging");
+  out.field("manufacturer", "Pylontech").field("manufacturer_source", "reported");
   out.key("voltage_v").number(stack_v, 2).key("current_a").number(current, 1);
   out.key("temperature_min_c").number(21.0, 1).key("temperature_max_c").number(24.5, 1);
   out.key("cell_min_v").number(cell_min, 3).key("cell_max_v").number(cell_max, 3);
@@ -103,7 +107,16 @@ inline std::string server_answer(Scenario scenario, std::uint32_t step = 0) {
     out.field("soc_percent", soc).field("state", current < 0 ? "Dischg" : "Charge");
     out.key("cells_v").begin_array();
     for (int c = 0; c < kCells; ++c) out.number(cells[m][c], 3);
-    out.end_array().end_object();
+    out.end_array();
+    if (scenario == Scenario::kBmsFault && m == 2) {
+      out.key("cells_unread").begin_array().number(3, 0).number(4, 0).number(5, 0).end_array();
+      out.key("flags").begin_array();
+      out.begin_object().field("column", "voltage").field("word", "UV").field("cell", 3).end_object();
+      out.begin_object().field("column", "voltage").field("word", "High").end_object();
+      out.end_array();
+    }
+    if (scenario == Scenario::kBmsFault && m == 3) out.key("left_out").begin_array().string("current").end_array();
+    out.end_object();
   }
   out.end_array().end_object().end_object();
 

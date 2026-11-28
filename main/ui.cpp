@@ -66,8 +66,8 @@ const lv_font_t* font_of(Size size) {
 
 std::string word(std::string_view key) { return std::string(text::word(key, text::effective_language(g_state.language))); }
 
-std::uint32_t colour_of(Level level) { return level == Level::kAlarm ? kAlarm : level == Level::kWarn ? kWarn : kOk; }
-const char* symbol_of(Level level) { return level == Level::kAlarm ? LV_SYMBOL_BELL : level == Level::kWarn ? LV_SYMBOL_WARNING : LV_SYMBOL_OK; }
+std::uint32_t colour_of(Level level) { return level >= Level::kAlarm ? kAlarm : level == Level::kWarn ? kWarn : kOk; }
+const char* symbol_of(Level level) { return level == Level::kFault ? LV_SYMBOL_CLOSE : level == Level::kAlarm ? LV_SYMBOL_BELL : level == Level::kWarn ? LV_SYMBOL_WARNING : LV_SYMBOL_OK; }
 
 // ---- the building blocks ----
 lv_obj_t* box(lv_obj_t* parent, int x, int y, int w, int h, std::uint32_t colour, int radius = 12) {
@@ -298,10 +298,11 @@ void page_batteries() {
       lv_obj_add_flag(card, LV_OBJ_FLAG_CLICKABLE);
       lv_obj_add_event_cb(card, on_module, LV_EVENT_CLICKED, reinterpret_cast<void*>(static_cast<std::intptr_t>(b * 100 + static_cast<std::size_t>(module.n))));
       label(card, 14, 8, 216, word("module") + " " + std::to_string(module.n), Size::kNormal);
-      label(card, 14, 40, 216, battery.device, Size::kSmall, kSoft);
+      const std::string maker = maker_text(module.maker.name.empty() ? stack_maker(battery) : module.maker, word("deduced"));
+      label(card, 14, 40, 216, maker.empty() ? battery.device : battery.device + " - " + maker, Size::kSmall, kSoft);
       label(card, 14, 64, 216, format_percent(module.soc_percent), Size::kLarge, colour_of(level));
       label(card, 14, 118, 216, format_value(module.voltage_v, 2, "V") + "   " + format_value(module.temperature_c, 1, "°C"), Size::kSmall);
-      const std::optional<CellStats> stats = cell_stats(module.cells_v);
+      const std::optional<CellStats> stats = cell_stats(module.cells_v, module.cells_unread);
       label(card, 14, 146, 216, word("spread") + ": " + (stats ? std::to_string(stats->delta_mv) + " mV" : std::string("--")), Size::kSmall, kSoft);
       mark(card, 14, 176, 216, level);
     }
@@ -319,11 +320,13 @@ void page_cells() {
 
   const Level level = battery.stale ? Level::kWarn : module_level(*module, g_state.limits);
   button(g_content, 12, 8, 130, 52, word("back"), kPanelHigh, on_back, 0);
-  label(g_content, 160, 18, 460, word("module") + " " + std::to_string(module->n) + " - " + battery.node + " / " + battery.device, Size::kNormal);
+  const std::string maker = maker_text(module->maker.name.empty() ? stack_maker(battery) : module->maker, word("deduced"));
+  label(g_content, 160, 8, 460, word("module") + " " + std::to_string(module->n) + " - " + battery.node + " / " + battery.device, Size::kNormal);
+  label(g_content, 160, 40, 460, maker, Size::kSmall, kSoft);
   mark(g_content, 640, 22, 170, level);
   label(g_content, 820, 22, 192, format_value(module->temperature_c, 1, "°C") + "  " + format_percent(module->soc_percent), Size::kSmall, kInk, LV_TEXT_ALIGN_RIGHT);
 
-  const std::optional<CellStats> stats = cell_stats(module->cells_v);
+  const std::optional<CellStats> stats = cell_stats(module->cells_v, module->cells_unread);
   lv_obj_t* chart = box(g_content, 12, 68, 1000, 292, kPanel);
   if (!stats) {
     paragraph(chart, 100, 130, 800, word("no_cells"), Size::kNormal, kSoft);
@@ -332,14 +335,18 @@ void page_cells() {
     const int step = 984 / (count < 15 ? 15 : count);
     for (int c = 0; c < count; ++c) {
       const double volts = module->cells_v[static_cast<std::size_t>(c)];
-      const Level own = cell_level(volts, g_state.limits);
-      const int x = 8 + c * step, full = 206, high = 6 + static_cast<int>(cell_bar(volts) * (full - 6));
+      const bool unread = is_unread(module->cells_unread, static_cast<std::size_t>(c));
+      Level own = unread ? Level::kFault : cell_level(volts, g_state.limits);
+      for (const BatteryState& state : module->states)
+        if (state.cell == c) own = worst(own, state_level(state));
+      const int x = 8 + c * step, full = 206, high = unread ? 0 : 6 + static_cast<int>(cell_bar(volts) * (full - 6));
       label(chart, x, 6, step, std::to_string(c + 1), Size::kSmall, kSoft, LV_TEXT_ALIGN_CENTER);
       box(chart, x + 8, 32, step - 16, full, kPanelHigh, 4);
-      box(chart, x + 8, 32 + full - high, step - 16, high, own == Level::kAlarm ? kAlarm : kAccent, 4);
+      if (high > 0) box(chart, x + 8, 32 + full - high, step - 16, high, own >= Level::kAlarm ? kAlarm : own == Level::kWarn ? kWarn : kAccent, 4);
+      if (own == Level::kFault) mark(chart, x + step / 2 - 12, 40, 40, own, false);
       if (own == Level::kAlarm) mark(chart, x + step / 2 - 12, 40, 40, own, false);
       // three decimals do not fit under sixteen bars, so the figure is written in millivolts when the bars are narrow
-      label(chart, x, 244, step, step >= 62 ? format_number(volts, 3) : format_number(volts * 1000.0, 0), Size::kSmall, own == Level::kAlarm ? kAlarm : kInk, LV_TEXT_ALIGN_CENTER);
+      label(chart, x, 244, step, unread ? std::string("--") : step >= 62 ? format_number(volts, 3) : format_number(volts * 1000.0, 0), Size::kSmall, own >= Level::kAlarm ? kAlarm : kInk, LV_TEXT_ALIGN_CENTER);
     }
     label(chart, 16, 266, 968,
           word("min") + " " + format_number(stats->min_v, 3) + " V (" + std::to_string(stats->min_index + 1) + ")     " + word("max") + " " + format_number(stats->max_v, 3) + " V (" +
@@ -359,7 +366,8 @@ void page_inverters() {
   int y = 8;
   for (const Inverter& inverter : g_state.snapshot.inverters) {
     lv_obj_t* card = box(g_content, 12, y, 1000, 330, kPanel);
-    label(card, 16, 12, 500, inverter.node + " / " + inverter.device, Size::kNormal);
+    const std::string maker = maker_text(inverter.maker, word("deduced"));
+    label(card, 16, 12, 760, inverter.node + " / " + inverter.device + (maker.empty() ? "" : " - " + maker), Size::kNormal);
     mark(card, 800, 16, 190, inverter_level(inverter));
     label(card, 16, 48, 970, word("mode") + ": " + (inverter.stale ? word("device_old") : word(mode_key(inverter.mode))), Size::kSmall, inverter.mode == "fault" ? kAlarm : kSoft);
     tile(card, 16, 80, 236, 104, word("grid"), format_value(inverter.grid_v, 0, "V"), kInk);

@@ -19,12 +19,30 @@ constexpr std::size_t kMaxDevices = 32;
 constexpr std::size_t kMaxModules = 16;
 constexpr std::size_t kMaxCells = 32;
 constexpr std::size_t kMaxWarnings = 32;
+constexpr std::size_t kMaxStates = 48;
+constexpr std::size_t kMaxLeftOut = 12;
+
+// Who made it, as the node told the server; `deduced` when its protocol or model tells it and the equipment did not say it. Empty: not known, and never made up.
+struct Maker {
+  std::string name;
+  bool deduced = false;
+};
+
+// A state of a module or of one of its cells that is not the normal one, with the battery's own word. `cell` counts from 0; -1: the module.
+struct BatteryState {
+  std::string column, word;
+  int cell = -1;
+};
 
 struct Module {
   int n = 0;
   bool present = false;
   Reading soc_percent, voltage_v, current_a, temperature_c;
   std::vector<double> cells_v;   // empty when the module does not say its cells, or says one that cannot be a cell voltage
+  Maker maker;
+  std::vector<BatteryState> states;
+  std::vector<int> cells_unread;       // positions (from 0) of the cells the battery's electronics do not read
+  std::vector<std::string> left_out;   // figures the node read as impossible and did not send
 };
 
 struct Battery {
@@ -32,6 +50,7 @@ struct Battery {
   bool stale = false, example = false, alarm = false, protecting = false;
   Reading soc_percent, voltage_v, current_a, power_w, capacity_ah, full_capacity_ah, energy_kwh;
   std::vector<Module> stack;
+  Maker maker;
 };
 
 struct Inverter {
@@ -39,6 +58,7 @@ struct Inverter {
   bool stale = false, example = false;
   Reading grid_v, out_w, load_percent, battery_v, battery_a, battery_percent, pv_w, heatsink_c;
   std::vector<std::string> warnings;
+  Maker maker;
 };
 
 // The sums are the server's: the screen does not add up the equipment itself, so that it says what Studio and the phone say.
@@ -64,6 +84,14 @@ inline Reading number_in(const json::Value& object, std::string_view name, doubl
   return member->number;
 }
 
+inline Maker maker_of(const json::Value& object) {
+  Maker maker;
+  maker.name = object.string_or("manufacturer", "");
+  if (maker.name.size() > 32) maker.name.clear();
+  maker.deduced = !maker.name.empty() && object.string_or("manufacturer_source", "") == "deduced";
+  return maker;
+}
+
 inline Module module_of(const json::Value& value) {
   Module module;
   module.n = static_cast<int>(value.integer_or("n", 0, 0, static_cast<long long>(kMaxModules)));
@@ -80,12 +108,37 @@ inline Module module_of(const json::Value& value) {
       module.cells_v.push_back(cell.number);
     }
   }
+  module.maker = maker_of(value);
+  const json::Value* flags = value.get("flags");
+  if (flags != nullptr && flags->is_array()) {
+    for (const json::Value& flag : flags->items) {
+      if (module.states.size() == kMaxStates) break;
+      if (!flag.is_object()) continue;
+      BatteryState state{flag.string_or("column", ""), flag.string_or("word", ""), static_cast<int>(flag.integer_or("cell", -1, -1, static_cast<long long>(kMaxCells) - 1))};
+      if (!state.column.empty() && !state.word.empty() && state.column.size() <= 24 && state.word.size() <= 16) module.states.push_back(std::move(state));
+    }
+  }
+  const json::Value* unread = value.get("cells_unread");
+  if (unread != nullptr && unread->is_array()) {
+    for (const json::Value& entry : unread->items) {
+      if (module.cells_unread.size() == kMaxCells) break;
+      if (entry.is_number() && entry.number >= 0 && entry.number < static_cast<double>(kMaxCells)) module.cells_unread.push_back(static_cast<int>(entry.number));
+    }
+  }
+  const json::Value* left_out = value.get("left_out");
+  if (left_out != nullptr && left_out->is_array()) {
+    for (const json::Value& entry : left_out->items) {
+      if (module.left_out.size() == kMaxLeftOut) break;
+      if (entry.is_string() && entry.text.size() <= 16) module.left_out.push_back(entry.text);
+    }
+  }
   return module;
 }
 
 inline Battery battery_of(const json::Value& reading) {
   Battery battery;
   battery.model = reading.string_or("model", "");
+  battery.maker = maker_of(reading);
   battery.state = reading.string_or("state", "");
   battery.alarm = reading.bool_or("alarm", false);
   battery.protecting = reading.bool_or("protecting", false);
@@ -109,6 +162,7 @@ inline Battery battery_of(const json::Value& reading) {
 inline Inverter inverter_of(const json::Value& reading) {
   Inverter inverter;
   inverter.mode = reading.string_or("mode", "unknown");
+  inverter.maker = maker_of(reading);
   inverter.grid_v = number_in(reading, "grid_v", 0, 600);
   inverter.out_w = number_in(reading, "out_w", 0, 100000);
   inverter.load_percent = number_in(reading, "load_percent", 0, 200);
