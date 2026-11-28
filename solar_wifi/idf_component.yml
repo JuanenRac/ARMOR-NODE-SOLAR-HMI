@@ -1,0 +1,4 @@
+## The ESP32-P4 has no radio: the Wi-Fi of the ESP32-C6 of the board is reached over SDIO with these two components of Espressif.
+dependencies:
+  espressif/esp_wifi_remote: ">=0.14.0"
+  espressif/esp_hosted: ">=2.0.0"

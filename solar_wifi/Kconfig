@@ -1,0 +1,5 @@
+config SOLAR_WIFI
+    bool
+    default y
+    help
+        Present only in a build that took the solar_wifi folder: Wi-Fi through the ESP32-C6.

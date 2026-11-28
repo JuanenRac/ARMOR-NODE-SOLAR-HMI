@@ -2,14 +2,17 @@
 # ARMOR-NODE-SOLAR-HMI - builds one variant of the firmware inside the ESP-IDF container and makes one file that is written at address 0.
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D). GPL-3.0-or-later.
 #
-#   bash tools/build_firmware.sh NAME [VARIANT_FILE ...]      for example: rev1-newpanel   or   rev3-newpanel variants/rev3
+#   bash tools/build_firmware.sh NAME [VARIANT_FILE ...]      for example: rev1-newpanel   or   rev3-newpanel variants/rev3   or   rev1-newpanel-wifi variants/wifi
 #
 # SOLAR_SETTINGS, when set, holds extra lines "CONFIG_SOLAR_NAME=value" separated by ";" to try another pin or timing without touching the code.
 set -euo pipefail
 name="$1"
 shift
 defaults="sdkconfig.defaults"
-for file in "$@"; do defaults="$defaults;$file"; done
+for file in "$@"; do
+  defaults="$defaults;$file"
+  if [ "$file" = "variants/wifi" ]; then export SOLAR_WIFI=1; fi
+done
 build="build/$name"
 mkdir -p "$build" out
 if [ -n "${SOLAR_SETTINGS:-}" ]; then

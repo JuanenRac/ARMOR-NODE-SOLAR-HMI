@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT.parent / "ARMOR-COMMON" / "firmware_base" / "core"
-SHARED = ("json.hpp", "hmac_sha256.hpp")
+SHARED = ("json.hpp", "hmac_sha256.hpp", "secret_seal.hpp", "fw_trust.hpp", "ed25519_verify.hpp", "semver.hpp")
 NAMES = {"@PROJECT@": "ARMOR-NODE-SOLAR-HMI", "@project-@": "armor-solar-hmi", "@project_@": "armor_solar_hmi", "@kind@": "solar-hmi"}
 
 

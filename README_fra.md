@@ -21,14 +21,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 ou ultérieure">
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Langage">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
-  <img src="https://img.shields.io/badge/Tests-8%20host%20programs-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-9%20host%20programs-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturité">
 </p>
 
 ---
 
-**Vérification d'honnêteté - ce qui fonctionne aujourd'hui :** La logique de l'écran, un simulateur d'installation et les écrans sont écrits et testés sur un ordinateur (8 programmes hôte), et un firmware pour la carte se compile. **Il n'a jamais tourné sur une carte, il n'y a pas encore de connexion à un serveur et rien ici n'envoie d'ordre à une batterie.**
+**Vérification d'honnêteté - ce qui fonctionne aujourd'hui :** La logique de l'écran, un simulateur d'installation et les écrans sont écrits et testés sur un ordinateur (9 programmes hôte), et un firmware pour la carte se compile, avec la connexion, la lecture du serveur, les réglages en flash, le Wi-Fi et les mises à jour signées, tout désactivé tant que personne ne l'active. **Il n'a jamais tourné sur une carte et rien ici n'envoie d'ordre à une batterie.**
 
 ---
 
@@ -40,7 +40,7 @@
 | Maturité | Ébauche |
 | Rôle | Écran tactile solaire d'A.R.M.O.R. (famille : Clients, parent : ARMOR-SERVER) |
 | Technologie | Cœur et simulateur en C++17, CMake ; contrôles en Python |
-| Tests | 8 programmes hôte |
+| Tests | 9 programmes hôte |
 | Carte | Guition JC1060P470C (ESP32-P4 avec ESP32-C6, 7 pouces, 1024 x 600) ; code qui se compile, jamais exécuté dessus |
 | Fonctionne sur | Un ordinateur avec CMake, un compilateur C++17 et Python 3.11+ |
 | Sur matériel réel | Rien n'a tourné sur la carte |
@@ -56,13 +56,13 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 
 | Domaine | État | Ce que cela veut dire ici |
 |---|---|---|
-| Logiciel | 🟠 | Cœur, écrans et un premier firmware écrits ; pas de lien serveur. |
+| Logiciel | 🟠 | Cœur, écrans et un firmware avec lien de lecture écrits ; rien n'a tourné sur une carte. |
 | Tests | 🟡 | Programmes hôte et deux contrôles avec ARMOR-COMMON ; stade précoce. |
 | Interface | 🟠 | Les écrans sont dessinés par un simulateur sur ordinateur ; jamais sur la dalle. |
 | Matériel | 🔴 | Le firmware se compile ; rien n'a tourné sur la carte. |
-| Sécurité | 🟠 | PIN et contrôle d'écriture ne sont que de la logique testée ; aucune revue indépendante. |
-| Mises à jour | 🔴 | Il n'y a encore rien à mettre à jour. |
-| Intégration | 🔴 | Un lien de lecture est essayé sur ordinateur avec le simulateur ; le firmware ne l'utilise pas encore. |
+| Sécurité | 🟠 | PIN, réglages scellés et mises à jour signées ne sont que de la logique testée et du code compilé ; aucune revue indépendante. |
+| Mises à jour | 🔴 | Les mises à jour signées sont écrites et désactivées ; aucune image signée n'est publiée ni installée. |
+| Intégration | 🔴 | Le firmware a la connexion et le lien de lecture, désactivés par défaut ; essayés sur ordinateur avec le simulateur, jamais depuis une carte vers un serveur. |
 | Documentation | 🟡 | README en huit langues et la note de conception. |
 
 ## 🎯 Présentation
@@ -125,6 +125,7 @@ python -I tools/armor_ci_validate.py
 | `test_plant.cpp` | les six scénarios |
 | `test_screen_text.cpp` | chaque texte en huit langues |
 | `test_server_link.cpp` | la lecture du serveur : coupures, refus |
+| `test_panel.cpp` | réglages, console série, session, contrôle de mise à jour |
 | `test_screen_model.cpp` | alarmes listées, chiffres, broches |
 | `check_font_glyphs.py` | les polices ont chaque caractère |
 | `check_simulator.py` | le simulateur respecte les schémas |
@@ -146,42 +147,50 @@ La première version publiée contient un fichier par variante (révision de l'�
 ```text
 ARMOR-NODE-SOLAR-HMI/
 ├── core/
-│   ├── solar_data.hpp      ce qui est lu du serveur
-│   ├── solar_view.hpp      données anciennes, niveaux, clignotement
-│   ├── pin_gate.hpp        le PIN de l'écran
-│   ├── write_gate.hpp      quand proposer une opération
-│   ├── screen_text.hpp     textes en 8 langues
-│   ├── screen_model.hpp    alarmes et chiffres
-│   ├── server_link.hpp     lit le serveur (pas branché)
-│   ├── board_p4_jc1060.h   broches de la carte
-│   ├── json.hpp            de la base de firmware commune
-│   └── hmac_sha256.hpp     de la base de firmware commune
+│   ├── solar_data.hpp       ce qui est lu du serveur
+│   ├── solar_view.hpp       données anciennes, niveaux, clignotement
+│   ├── pin_gate.hpp         le PIN de l'écran
+│   ├── write_gate.hpp       quand proposer une opération
+│   ├── screen_text.hpp      textes en 8 langues
+│   ├── screen_model.hpp     alarmes et chiffres
+│   ├── server_link.hpp      lit le serveur
+│   ├── panel_*.hpp          réglages, console, session
+│   ├── update_policy.hpp    quelle image installer
+│   ├── board_p4_jc1060.h    broches de la carte
+│   ├── json.hpp             de la base de firmware commune
+│   └── hmac_sha256.hpp      de la base de firmware commune
 ├── main/
-│   ├── ui.cpp              les pages solaires
-│   ├── diag_ui.cpp         contrôle de la carte
-│   ├── board.c             écran, tactile, réseau
-│   ├── app_main.cpp        démarrage et journal
-│   └── fonts/              polices de l'écran
+│   ├── ui.cpp               les pages solaires
+│   ├── diag_ui.cpp          contrôle de la carte
+│   ├── board.c              écran, tactile, réseau
+│   ├── link.cpp             lit le serveur
+│   ├── store.cpp            réglages en flash
+│   ├── serial_console.cpp   la console série
+│   ├── ota.cpp              mises à jour signées
+│   ├── app_main.cpp         démarrage et journal
+│   └── fonts/               polices de l'écran
+├── solar_wifi/
+│   └── solar_wifi.c         Wi-Fi par l'ESP32-C6
 ├── simulator/
-│   ├── plant.hpp           six scénarios
-│   ├── main.cpp            affiche les réponses
-│   └── screens/            images sur PC
-├── tests/                  tests hôte et contrôles de contrat
-├── docs/                   conception et sources des figures
-├── CMakeLists.txt          projet du firmware
-├── sdkconfig.defaults      réglages de build
-├── partitions.csv          plan de la flash
-├── variants/               autre puce ou dalle
-├── tools/                  contrôles communs
-├── images/                 images des README
-├── .github/                workflows et formulaires
-├── armor.project.json      manifeste
-├── CHANGELOG.md            changements
-├── LICENSE                 GPL-3.0-or-later
-├── CONTRIBUTING.md         comment contribuer
-├── CODE_OF_CONDUCT.md      code de conduite
-├── SECURITY.md             signaler une vulnérabilité
-└── SUPPORT.md              obtenir de l'aide
+│   ├── plant.hpp            six scénarios
+│   ├── main.cpp             affiche les réponses
+│   └── screens/             images sur PC
+├── tests/                   tests hôte et contrôles de contrat
+├── docs/                    conception et sources des figures
+├── CMakeLists.txt           projet du firmware
+├── sdkconfig.defaults       réglages de build
+├── partitions.csv           plan de la flash
+├── variants/                autre puce ou dalle
+├── tools/                   contrôles communs
+├── images/                  images des README
+├── .github/                 workflows et formulaires
+├── armor.project.json       manifeste
+├── CHANGELOG.md             changements
+├── LICENSE                  GPL-3.0-or-later
+├── CONTRIBUTING.md          comment contribuer
+├── CODE_OF_CONDUCT.md       code de conduite
+├── SECURITY.md              signaler une vulnérabilité
+└── SUPPORT.md               obtenir de l'aide
 ```
 
 </details>
@@ -190,14 +199,14 @@ ARMOR-NODE-SOLAR-HMI/
 
 **Limites connues aujourd'hui**
 
-* **Ce qu'il fait**: Lit la réponse solaire du serveur, la juge, protège le PIN, dessine les écrans sur ordinateur et compile un firmware pour la carte.
-* **Ce qu'il ne fait pas**: Se connecter à un serveur ou au Wi-Fi, se mettre à jour, envoyer un ordre ou tourner sur la carte (jamais essayé).
+* **Ce qu'il fait**: Lit la réponse solaire du serveur, la juge, protège le PIN, dessine les écrans sur ordinateur et compile un firmware qui peut se connecter, garder ses réglages, rejoindre le Wi-Fi et accepter une mise à jour signée, tout désactivé par défaut et réglé par la console série.
+* **Ce qu'il ne fait pas**: Envoyer un ordre à une batterie, se configurer depuis l'écran ou tourner sur la carte (jamais essayé).
 
 **Prochainement**
 
 * La première mise sous tension avec l'écran de contrôle.
-* La connexion du compte panneau et le lien de lecture dans le firmware.
-* Le Wi-Fi par l'ESP32-C6, les réglages en flash et les mises à jour.
+* Essayer sur la carte la connexion, le lien de lecture, le Wi-Fi et une mise à jour.
+* La configuration depuis l'écran au lieu de la console série.
 * La couche carte partagée avec ARMOR-NODE-HMI.
 
 ## 🌍 Langues

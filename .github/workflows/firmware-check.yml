@@ -3,7 +3,7 @@
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D)
 # GPL-3.0-or-later - see LICENSE
 # =============================================================================
-# Compiles the firmware in the official ESP-IDF container, in three variants (chip revision 1.x with the new panel, revision 3.x with the new panel, revision 1.x with the old panel),
+# Compiles the firmware in the official ESP-IDF container, in four variants (chip revision 1.x with the new panel, revision 3.x with the new panel, revision 1.x with the old panel, revision 1.x with Wi-Fi through the ESP32-C6),
 # and keeps for each a single file that is written at address 0. It publishes, signs and releases nothing, and holds no secret. A green run means that it compiles, not that it
 # works on a board.
 
@@ -11,10 +11,10 @@ name: Firmware check (ESP32-P4)
 
 on:
   pull_request:
-    paths: ["main/**", "core/**", "variants/**", "sdkconfig.defaults", "partitions.csv", "CMakeLists.txt", "tools/build_firmware.sh", "armor.project.json", ".github/workflows/firmware-check.yml"]
+    paths: ["main/**", "core/**", "solar_wifi/**", "variants/**", "sdkconfig.defaults", "partitions.csv", "CMakeLists.txt", "tools/build_firmware.sh", "armor.project.json", ".github/workflows/firmware-check.yml"]
   push:
     branches: [main]
-    paths: ["main/**", "core/**", "variants/**", "sdkconfig.defaults", "partitions.csv", "CMakeLists.txt", "tools/build_firmware.sh", "armor.project.json", ".github/workflows/firmware-check.yml"]
+    paths: ["main/**", "core/**", "solar_wifi/**", "variants/**", "sdkconfig.defaults", "partitions.csv", "CMakeLists.txt", "tools/build_firmware.sh", "armor.project.json", ".github/workflows/firmware-check.yml"]
   workflow_dispatch:
     inputs:
       settings:
@@ -45,6 +45,8 @@ jobs:
             variants: variants/rev3
           - name: rev1-oldpanel
             variants: variants/oldpanel
+          - name: rev1-newpanel-wifi
+            variants: variants/wifi
     steps:
       - name: Check out the code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

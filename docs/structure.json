@@ -99,14 +99,40 @@
         {
           "name": "server_link.hpp",
           "desc": {
-            "en": "reads the server (not wired)",
-            "es": "lee el servidor (sin conectar)",
-            "de": "liest den Server (nicht verbunden)",
-            "fr": "lit le serveur (pas branché)",
-            "it": "legge il server (non collegato)",
-            "ja": "サーバー読取 (未接続)",
-            "zh": "读取服务器 (未接入)",
-            "pt": "lê o servidor (por ligar)"
+            "en": "reads the server",
+            "es": "lee el servidor",
+            "de": "liest den Server",
+            "fr": "lit le serveur",
+            "it": "legge il server",
+            "ja": "サーバーを読む",
+            "zh": "读取服务器",
+            "pt": "lê o servidor"
+          }
+        },
+        {
+          "name": "panel_*.hpp",
+          "desc": {
+            "en": "settings, console, session",
+            "es": "ajustes, consola, sesión",
+            "de": "Einstellungen, Konsole, Sitzung",
+            "fr": "réglages, console, session",
+            "it": "impostazioni, console, sessione",
+            "ja": "設定・コンソール・接続",
+            "zh": "设置、控制台、会话",
+            "pt": "definições, consola, sessão"
+          }
+        },
+        {
+          "name": "update_policy.hpp",
+          "desc": {
+            "en": "which image installs",
+            "es": "qué imagen se instala",
+            "de": "welches Abbild installiert",
+            "fr": "quelle image installer",
+            "it": "quale immagine installare",
+            "ja": "導入できるイメージ",
+            "zh": "可安装哪个映像",
+            "pt": "que imagem se instala"
           }
         },
         {
@@ -205,6 +231,58 @@
           }
         },
         {
+          "name": "link.cpp",
+          "desc": {
+            "en": "reads the server",
+            "es": "lee el servidor",
+            "de": "liest den Server",
+            "fr": "lit le serveur",
+            "it": "legge il server",
+            "ja": "サーバーを読む",
+            "zh": "读取服务器",
+            "pt": "lê o servidor"
+          }
+        },
+        {
+          "name": "store.cpp",
+          "desc": {
+            "en": "settings in flash",
+            "es": "ajustes en flash",
+            "de": "Einstellungen im Flash",
+            "fr": "réglages en flash",
+            "it": "impostazioni in flash",
+            "ja": "フラッシュの設定",
+            "zh": "闪存中的设置",
+            "pt": "definições na flash"
+          }
+        },
+        {
+          "name": "serial_console.cpp",
+          "desc": {
+            "en": "the serial console",
+            "es": "la consola serie",
+            "de": "die serielle Konsole",
+            "fr": "la console série",
+            "it": "la console seriale",
+            "ja": "シリアルコンソール",
+            "zh": "串口控制台",
+            "pt": "a consola série"
+          }
+        },
+        {
+          "name": "ota.cpp",
+          "desc": {
+            "en": "signed updates",
+            "es": "actualizaciones firmadas",
+            "de": "signierte Updates",
+            "fr": "mises à jour signées",
+            "it": "aggiornamenti firmati",
+            "ja": "署名付き更新",
+            "zh": "签名更新",
+            "pt": "atualizações assinadas"
+          }
+        },
+        {
           "name": "app_main.cpp",
           "desc": {
             "en": "the start and the log",
@@ -228,6 +306,36 @@
             "ja": "画面フォント",
             "zh": "屏幕字体",
             "pt": "tipos de letra"
+          }
+        }
+      ]
+    },
+    {
+      "name": "solar_wifi/",
+      "span": 1,
+      "accent": "b",
+      "sub": {
+        "en": "optional",
+        "es": "opcional",
+        "de": "optional",
+        "fr": "en option",
+        "it": "opzionale",
+        "ja": "任意",
+        "zh": "可选",
+        "pt": "opcional"
+      },
+      "rows": [
+        {
+          "name": "solar_wifi.c",
+          "desc": {
+            "en": "Wi-Fi by the ESP32-C6",
+            "es": "Wi-Fi por el ESP32-C6",
+            "de": "WLAN über den ESP32-C6",
+            "fr": "Wi-Fi par l'ESP32-C6",
+            "it": "Wi-Fi tramite l'ESP32-C6",
+            "ja": "ESP32-C6 経由の Wi-Fi",
+            "zh": "经 ESP32-C6 的 Wi-Fi",
+            "pt": "Wi-Fi pelo ESP32-C6"
           }
         }
       ]
@@ -315,14 +423,14 @@
       "rows": [
         {
           "desc": {
-            "en": "seven C++ programs",
-            "es": "siete programas C++",
-            "de": "sieben C++-Programme",
-            "fr": "sept programmes C++",
-            "it": "sette programmi C++",
-            "ja": "C++ プログラム 7 本",
-            "zh": "七个 C++ 程序",
-            "pt": "sete programas C++"
+            "en": "nine C++ programs",
+            "es": "nueve programas C++",
+            "de": "neun C++-Programme",
+            "fr": "neuf programmes C++",
+            "it": "nove programmi C++",
+            "ja": "C++ プログラム 9 本",
+            "zh": "九个 C++ 程序",
+            "pt": "nove programas C++"
           }
         },
         {
