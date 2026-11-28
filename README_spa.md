@@ -22,7 +22,7 @@
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Lenguaje">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
   <img src="https://img.shields.io/badge/Tests-9%20host%20programs-2ea44f.svg" alt="Pruebas">
-  <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Version-0.0.3-0f6cbd.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Madurez">
 </p>
 
@@ -36,7 +36,7 @@
 
 | | |
 |---|---|
-| Versión | `0.0.2` |
+| Versión | `0.0.3` |
 | Madurez | Andamiaje |
 | Función | Pantalla táctil solar de A.R.M.O.R. (familia: Clients, padre: ARMOR-SERVER) |
 | Tecnología | Núcleo y simulador en C++17, CMake; comprobaciones en Python |

@@ -22,7 +22,7 @@
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Language">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
   <img src="https://img.shields.io/badge/Tests-9%20host%20programs-2ea44f.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.0.3-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -36,7 +36,7 @@
 
 | | |
 |---|---|
-| Versão | `0.0.2` |
+| Versão | `0.0.3` |
 | Maturidade | Estrutura inicial |
 | Função | Ecrã tátil solar do A.R.M.O.R. (família: Clients, principal: ARMOR-SERVER) |
 | Tecnologia | Núcleo e simulador em C++17, CMake; verificações em Python |
