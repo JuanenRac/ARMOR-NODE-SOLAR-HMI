@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.0.3] - Setup, reading link, Wi-Fi, signed updates and equipment figures, never run on a board
+
 - **What the equipment counts is drawn:** the inverter page says the energy of the panels and of the load that the inverter counts (today and in all), and the cells page the health the stack says of itself, only when said.
 - **Setting the screen up from the serial console:** server, account, language, Wi-Fi and switches (`help` lists them); secrets are never written back and everything starts off. The settings and the PIN are kept in flash, with passwords and the PIN record sealed with a key of the same chip (it does not protect against somebody who holds the board). Never run on a board.
 - **The PIN pad works on the firmware:** a PIN set from the console (`pin set`), its count of wrong tries written before the answer is shown. No operation on a battery is sent.
