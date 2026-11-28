@@ -21,14 +21,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 oder neuer">
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Sprache">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
-  <img src="https://img.shields.io/badge/Tests-8%20host%20programs-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-9%20host%20programs-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Reifegrad">
 </p>
 
 ---
 
-**Ehrlichkeitsprüfung - was heute läuft:** Die Logik, ein Anlagensimulator und die Bildschirme sind geschrieben und auf einem Computer getestet (8 Host-Programme), und eine Firmware für die Platine wird übersetzt. **Sie lief noch nie auf einer Platine, es gibt noch keine Verbindung zu einem Server und nichts hier sendet einen Befehl an eine Batterie.**
+**Ehrlichkeitsprüfung - was heute läuft:** Die Logik, ein Anlagensimulator und die Bildschirme sind geschrieben und auf einem Computer getestet (9 Host-Programme), und eine Firmware für die Platine wird übersetzt, mit Anmeldung, Lesen des Servers, Einstellungen im Flash, WLAN und signierten Updates, alles aus, bis jemand es einschaltet. **Sie lief noch nie auf einer Platine und nichts hier sendet einen Befehl an eine Batterie.**
 
 ---
 
@@ -40,7 +40,7 @@
 | Reifegrad | Gerüst |
 | Rolle | Solar-Touchscreen von A.R.M.O.R. (Familie: Clients, übergeordnet: ARMOR-SERVER) |
 | Technik | Kern und Simulator in C++17, CMake; Prüfungen in Python |
-| Tests | 8 Host-Programme |
+| Tests | 9 Host-Programme |
 | Platine | Guition JC1060P470C (ESP32-P4 mit ESP32-C6, 7 Zoll, 1024 x 600); Code wird übersetzt, lief nie darauf |
 | Läuft auf | Ein Computer mit CMake, C++17-Compiler und Python 3.11+ |
 | Auf echter Hardware | Nichts lief auf der Platine |
@@ -56,13 +56,13 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
-| Software | 🟠 | Kern, Bildschirme und eine erste Firmware sind geschrieben; ohne Serveranbindung. |
+| Software | 🟠 | Kern, Bildschirme und eine Firmware mit Leseanbindung sind geschrieben; nichts lief auf einer Platine. |
 | Tests | 🟡 | Host-Programme und zwei Prüfungen gegen ARMOR-COMMON; frühes Stadium. |
 | Oberfläche | 🟠 | Die Bildschirme zeichnet ein Simulator am Computer; nie auf dem Panel. |
 | Hardware | 🔴 | Die Firmware wird übersetzt; nichts lief auf der Platine. |
-| Sicherheit | 🟠 | PIN und Schreibprüfung sind nur getestete Logik; keine unabhängige Prüfung. |
-| Aktualisierungen | 🔴 | Es gibt noch nichts zu aktualisieren. |
-| Integration | 🔴 | Eine Leseanbindung ist am Computer gegen den Simulator erprobt; die Firmware nutzt sie noch nicht. |
+| Sicherheit | 🟠 | PIN, versiegelte Einstellungen und signierte Updates sind nur getestete Logik und übersetzter Code; keine unabhängige Prüfung. |
+| Aktualisierungen | 🔴 | Signierte Updates sind geschrieben und aus; es gibt kein veröffentlichtes signiertes Abbild und keines wurde installiert. |
+| Integration | 🔴 | Die Firmware hat Anmeldung und Leseanbindung, standardmäßig aus; am Computer gegen den Simulator erprobt, nie von einer Platine gegen einen Server. |
 | Dokumentation | 🟡 | README in acht Sprachen und die Entwurfsnotiz. |
 
 ## 🎯 Überblick
@@ -125,6 +125,7 @@ python -I tools/armor_ci_validate.py
 | `test_plant.cpp` | die sechs Szenarien |
 | `test_screen_text.cpp` | jeder Text in acht Sprachen |
 | `test_server_link.cpp` | das Lesen des Servers: Abbrüche, Absagen |
+| `test_panel.cpp` | Einstellungen, serielle Konsole, Sitzung, Update-Prüfung |
 | `test_screen_model.cpp` | gelistete Alarme, Zahlen, Pins |
 | `check_font_glyphs.py` | die Schriften haben jedes Zeichen |
 | `check_simulator.py` | der Simulator folgt den Schemas |
@@ -146,42 +147,50 @@ Das erste Release enthält eine Datei je Variante (Bildschirm- und Chiprevision)
 ```text
 ARMOR-NODE-SOLAR-HMI/
 ├── core/
-│   ├── solar_data.hpp      was vom Server gelesen wird
-│   ├── solar_view.hpp      alte Daten, Stufen, Blinken
-│   ├── pin_gate.hpp        die PIN des Bildschirms
-│   ├── write_gate.hpp      wann eine Batterieaktion erscheint
-│   ├── screen_text.hpp     Texte in 8 Sprachen
-│   ├── screen_model.hpp    Alarme und Zahlen
-│   ├── server_link.hpp     liest den Server (nicht verbunden)
-│   ├── board_p4_jc1060.h   Pins der Platine
-│   ├── json.hpp            aus der gemeinsamen Firmware-Basis
-│   └── hmac_sha256.hpp     aus der gemeinsamen Firmware-Basis
+│   ├── solar_data.hpp       was vom Server gelesen wird
+│   ├── solar_view.hpp       alte Daten, Stufen, Blinken
+│   ├── pin_gate.hpp         die PIN des Bildschirms
+│   ├── write_gate.hpp       wann eine Batterieaktion erscheint
+│   ├── screen_text.hpp      Texte in 8 Sprachen
+│   ├── screen_model.hpp     Alarme und Zahlen
+│   ├── server_link.hpp      liest den Server
+│   ├── panel_*.hpp          Einstellungen, Konsole, Sitzung
+│   ├── update_policy.hpp    welches Abbild installiert
+│   ├── board_p4_jc1060.h    Pins der Platine
+│   ├── json.hpp             aus der gemeinsamen Firmware-Basis
+│   └── hmac_sha256.hpp      aus der gemeinsamen Firmware-Basis
 ├── main/
-│   ├── ui.cpp              die Solarseiten
-│   ├── diag_ui.cpp         der Platinentest
-│   ├── board.c             Anzeige, Touch, Netz
-│   ├── app_main.cpp        Start und Protokoll
-│   └── fonts/              Schriften
+│   ├── ui.cpp               die Solarseiten
+│   ├── diag_ui.cpp          der Platinentest
+│   ├── board.c              Anzeige, Touch, Netz
+│   ├── link.cpp             liest den Server
+│   ├── store.cpp            Einstellungen im Flash
+│   ├── serial_console.cpp   die serielle Konsole
+│   ├── ota.cpp              signierte Updates
+│   ├── app_main.cpp         Start und Protokoll
+│   └── fonts/               Schriften
+├── solar_wifi/
+│   └── solar_wifi.c         WLAN über den ESP32-C6
 ├── simulator/
-│   ├── plant.hpp           sechs Szenarien
-│   ├── main.cpp            gibt die Antworten aus
-│   └── screens/            Bilder am PC
-├── tests/                  Host-Tests und Vertragsprüfungen
-├── docs/                   Entwurf und Bildquellen
-├── CMakeLists.txt          Firmware-Projekt
-├── sdkconfig.defaults      Build-Vorgaben
-├── partitions.csv          Flash-Aufteilung
-├── variants/               anderer Chip, Panel
-├── tools/                  gemeinsame Prüfungen
-├── images/                 README-Bilder
-├── .github/                Workflows, Formulare
-├── armor.project.json      Manifest
-├── CHANGELOG.md            Änderungen
-├── LICENSE                 GPL-3.0-or-later
-├── CONTRIBUTING.md         wie man beiträgt
-├── CODE_OF_CONDUCT.md      Verhaltenskodex
-├── SECURITY.md             Schwachstellen melden
-└── SUPPORT.md              Hilfe erhalten
+│   ├── plant.hpp            sechs Szenarien
+│   ├── main.cpp             gibt die Antworten aus
+│   └── screens/             Bilder am PC
+├── tests/                   Host-Tests und Vertragsprüfungen
+├── docs/                    Entwurf und Bildquellen
+├── CMakeLists.txt           Firmware-Projekt
+├── sdkconfig.defaults       Build-Vorgaben
+├── partitions.csv           Flash-Aufteilung
+├── variants/                anderer Chip, Panel
+├── tools/                   gemeinsame Prüfungen
+├── images/                  README-Bilder
+├── .github/                 Workflows, Formulare
+├── armor.project.json       Manifest
+├── CHANGELOG.md             Änderungen
+├── LICENSE                  GPL-3.0-or-later
+├── CONTRIBUTING.md          wie man beiträgt
+├── CODE_OF_CONDUCT.md       Verhaltenskodex
+├── SECURITY.md              Schwachstellen melden
+└── SUPPORT.md               Hilfe erhalten
 ```
 
 </details>
@@ -190,14 +199,14 @@ ARMOR-NODE-SOLAR-HMI/
 
 **Bekannte Grenzen heute**
 
-* **Was es tut**: Liest die Solar-Antwort des Servers, bewertet sie, schützt die PIN, zeichnet die Bildschirme am Computer und übersetzt eine Firmware für die Platine.
-* **Was es nicht tut**: Sich mit Server oder WLAN verbinden, sich aktualisieren, Befehle senden oder auf der Platine laufen (nie versucht).
+* **Was es tut**: Liest die Solar-Antwort des Servers, bewertet sie, schützt die PIN, zeichnet die Bildschirme am Computer und übersetzt eine Firmware, die sich anmelden, Einstellungen speichern, WLAN nutzen und ein signiertes Update annehmen kann, alles standardmäßig aus und über die serielle Konsole eingerichtet.
+* **Was es nicht tut**: Befehle an eine Batterie senden, sich am Bildschirm einrichten lassen oder auf der Platine laufen (nie versucht).
 
 **Als Nächstes**
 
 * Das erste Einschalten auf der Platine mit dem Platinentest.
-* Die Anmeldung des Panelkontos und die Leseanbindung in der Firmware.
-* WLAN über den ESP32-C6, Einstellungen im Flash und Updates.
+* Anmeldung, Leseanbindung, WLAN und ein Update auf der Platine erproben.
+* Einrichtung am Bildschirm statt über die serielle Konsole.
 * Die mit ARMOR-NODE-HMI gemeinsame Platinenschicht.
 
 ## 🌍 Sprachen

@@ -21,14 +21,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Language">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
-  <img src="https://img.shields.io/badge/Tests-8%20host%20programs-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-9%20host%20programs-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**Verificação de honestidade - o que funciona hoje:** A lógica do ecrã, um simulador de uma instalação e os ecrãs estão escritos e testados num computador (8 programas de host), e há um firmware para a placa que compila. **Nunca correu numa placa, ainda não há ligação a um servidor e nada aqui envia ordens a uma bateria.**
+**Verificação de honestidade - o que funciona hoje:** A lógica do ecrã, um simulador de uma instalação e os ecrãs estão escritos e testados num computador (9 programas de host), e há um firmware para a placa que compila, com o início de sessão, a leitura do servidor, as definições na flash, o Wi-Fi e as atualizações assinadas, tudo desligado até alguém o ligar. **Nunca correu numa placa e nada aqui envia ordens a uma bateria.**
 
 ---
 
@@ -40,7 +40,7 @@
 | Maturidade | Estrutura inicial |
 | Função | Ecrã tátil solar do A.R.M.O.R. (família: Clients, principal: ARMOR-SERVER) |
 | Tecnologia | Núcleo e simulador em C++17, CMake; verificações em Python |
-| Testes | 8 programas de host |
+| Testes | 9 programas de host |
 | Placa | Guition JC1060P470C (ESP32-P4 com ESP32-C6, 7 polegadas, 1024 x 600); código que compila, nunca executado nela |
 | Funciona em | Um computador com CMake, um compilador C++17 e Python 3.11+ |
 | Em hardware real | Nada correu na placa |
@@ -56,13 +56,13 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 
 | Área | Estado | O que significa aqui |
 |---|---|---|
-| Software | 🟠 | Núcleo, ecrãs e um primeiro firmware escritos; sem ligação ao servidor. |
+| Software | 🟠 | Núcleo, ecrãs e um firmware com ligação de leitura escritos; nada correu numa placa. |
 | Testes | 🟡 | Programas de host e duas verificações face ao ARMOR-COMMON; fase inicial. |
 | Interface | 🟠 | Os ecrãs são desenhados por um simulador no computador; nunca no painel. |
 | Hardware | 🔴 | O firmware compila; nada correu na placa. |
-| Segurança | 🟠 | O PIN e a verificação de escrita são apenas lógica testada; sem revisão independente. |
-| Atualizações | 🔴 | Ainda não há nada para atualizar. |
-| Integração | 🔴 | Uma ligação de leitura é experimentada no computador com o simulador; o firmware ainda não a usa. |
+| Segurança | 🟠 | PIN, definições seladas e atualizações assinadas são apenas lógica testada e código compilado; sem revisão independente. |
+| Atualizações | 🔴 | As atualizações assinadas estão escritas e desligadas; não há imagem assinada publicada nem instalada numa placa. |
+| Integração | 🔴 | O firmware tem o início de sessão e a ligação de leitura, desligados por omissão; experimentados no computador com o simulador, nunca de uma placa para um servidor. |
 | Documentação | 🟡 | README em oito línguas e a nota de conceção. |
 
 ## 🎯 Visão geral
@@ -125,6 +125,7 @@ python -I tools/armor_ci_validate.py
 | `test_plant.cpp` | os seis cenários |
 | `test_screen_text.cpp` | cada texto nas oito línguas |
 | `test_server_link.cpp` | a leitura do servidor: cortes, recusas |
+| `test_panel.cpp` | definições, consola série, sessão, verificação de atualização |
 | `test_screen_model.cpp` | alarmes listados, números, pinos |
 | `check_font_glyphs.py` | os tipos de letra têm cada carácter |
 | `check_simulator.py` | o simulador cumpre os esquemas |
@@ -146,42 +147,50 @@ A primeira release traz um ficheiro por variante (revisão do ecrã e do chip), 
 ```text
 ARMOR-NODE-SOLAR-HMI/
 ├── core/
-│   ├── solar_data.hpp      o que se lê do servidor
-│   ├── solar_view.hpp      dados antigos, níveis, intermitência
-│   ├── pin_gate.hpp        o PIN do ecrã
-│   ├── write_gate.hpp      quando propor uma operação
-│   ├── screen_text.hpp     textos em 8 línguas
-│   ├── screen_model.hpp    alarmes e números
-│   ├── server_link.hpp     lê o servidor (por ligar)
-│   ├── board_p4_jc1060.h   pinos da placa
-│   ├── json.hpp            da base de firmware comum
-│   └── hmac_sha256.hpp     da base de firmware comum
+│   ├── solar_data.hpp       o que se lê do servidor
+│   ├── solar_view.hpp       dados antigos, níveis, intermitência
+│   ├── pin_gate.hpp         o PIN do ecrã
+│   ├── write_gate.hpp       quando propor uma operação
+│   ├── screen_text.hpp      textos em 8 línguas
+│   ├── screen_model.hpp     alarmes e números
+│   ├── server_link.hpp      lê o servidor
+│   ├── panel_*.hpp          definições, consola, sessão
+│   ├── update_policy.hpp    que imagem se instala
+│   ├── board_p4_jc1060.h    pinos da placa
+│   ├── json.hpp             da base de firmware comum
+│   └── hmac_sha256.hpp      da base de firmware comum
 ├── main/
-│   ├── ui.cpp              as páginas solares
-│   ├── diag_ui.cpp         verificação da placa
-│   ├── board.c             ecrã, toque, rede
-│   ├── app_main.cpp        arranque e registo
-│   └── fonts/              tipos de letra
+│   ├── ui.cpp               as páginas solares
+│   ├── diag_ui.cpp          verificação da placa
+│   ├── board.c              ecrã, toque, rede
+│   ├── link.cpp             lê o servidor
+│   ├── store.cpp            definições na flash
+│   ├── serial_console.cpp   a consola série
+│   ├── ota.cpp              atualizações assinadas
+│   ├── app_main.cpp         arranque e registo
+│   └── fonts/               tipos de letra
+├── solar_wifi/
+│   └── solar_wifi.c         Wi-Fi pelo ESP32-C6
 ├── simulator/
-│   ├── plant.hpp           seis cenários
-│   ├── main.cpp            imprime as respostas
-│   └── screens/            imagens no PC
-├── tests/                  testes de host e de contrato
-├── docs/                   conceção e fontes das figuras
-├── CMakeLists.txt          projeto do firmware
-├── sdkconfig.defaults      definições de build
-├── partitions.csv          mapa da flash
-├── variants/               outro chip ou painel
-├── tools/                  verificações comuns
-├── images/                 imagens dos README
-├── .github/                workflows e formulários
-├── armor.project.json      manifesto
-├── CHANGELOG.md            alterações
-├── LICENSE                 GPL-3.0-or-later
-├── CONTRIBUTING.md         como contribuir
-├── CODE_OF_CONDUCT.md      código de conduta
-├── SECURITY.md             comunicar vulnerabilidades
-└── SUPPORT.md              obter ajuda
+│   ├── plant.hpp            seis cenários
+│   ├── main.cpp             imprime as respostas
+│   └── screens/             imagens no PC
+├── tests/                   testes de host e de contrato
+├── docs/                    conceção e fontes das figuras
+├── CMakeLists.txt           projeto do firmware
+├── sdkconfig.defaults       definições de build
+├── partitions.csv           mapa da flash
+├── variants/                outro chip ou painel
+├── tools/                   verificações comuns
+├── images/                  imagens dos README
+├── .github/                 workflows e formulários
+├── armor.project.json       manifesto
+├── CHANGELOG.md             alterações
+├── LICENSE                  GPL-3.0-or-later
+├── CONTRIBUTING.md          como contribuir
+├── CODE_OF_CONDUCT.md       código de conduta
+├── SECURITY.md              comunicar vulnerabilidades
+└── SUPPORT.md               obter ajuda
 ```
 
 </details>
@@ -190,14 +199,14 @@ ARMOR-NODE-SOLAR-HMI/
 
 **Limites conhecidos hoje**
 
-* **O que faz**: Lê a resposta solar do servidor, avalia-a, protege o PIN, desenha os ecrãs no computador e compila um firmware para a placa.
-* **O que não faz**: Ligar-se a um servidor ou ao Wi-Fi, atualizar-se, enviar uma ordem ou correr na placa (nunca tentado).
+* **O que faz**: Lê a resposta solar do servidor, avalia-a, protege o PIN, desenha os ecrãs no computador e compila um firmware que pode iniciar sessão, guardar as definições, usar Wi-Fi e aceitar uma atualização assinada, tudo desligado por omissão e configurado pela consola série.
+* **O que não faz**: Enviar ordens a uma bateria, configurar-se a partir do ecrã ou correr na placa (nunca tentado).
 
 **A seguir**
 
 * O primeiro arranque na placa com o ecrã de verificação.
-* O início de sessão da conta do painel e a ligação de leitura no firmware.
-* Wi-Fi pelo ESP32-C6, definições na flash e atualizações.
+* Experimentar na placa o início de sessão, a ligação de leitura, o Wi-Fi e uma atualização.
+* Configurar a partir do ecrã em vez da consola série.
 * A camada de placa partilhada com o ARMOR-NODE-HMI.
 
 ## 🌍 Idiomas
