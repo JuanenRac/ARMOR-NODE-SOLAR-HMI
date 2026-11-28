@@ -21,14 +21,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 oder neuer">
   <img src="https://img.shields.io/badge/Language-C%2B%2B17-00599c.svg" alt="Sprache">
   <img src="https://img.shields.io/badge/Board-ESP32--P4%207%20inch%20(planned)-e7352c.svg" alt="Board">
-  <img src="https://img.shields.io/badge/Tests-7%20host%20programs-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-8%20host%20programs-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Reifegrad">
 </p>
 
 ---
 
-**Ehrlichkeitsprüfung - was heute läuft:** Die Logik, ein Anlagensimulator und die Bildschirme sind geschrieben und auf einem Computer getestet (7 Host-Programme), und eine Firmware für die Platine wird übersetzt. **Sie lief noch nie auf einer Platine, es gibt noch keine Verbindung zu einem Server und nichts hier sendet einen Befehl an eine Batterie.**
+**Ehrlichkeitsprüfung - was heute läuft:** Die Logik, ein Anlagensimulator und die Bildschirme sind geschrieben und auf einem Computer getestet (8 Host-Programme), und eine Firmware für die Platine wird übersetzt. **Sie lief noch nie auf einer Platine, es gibt noch keine Verbindung zu einem Server und nichts hier sendet einen Befehl an eine Batterie.**
 
 ---
 
@@ -40,7 +40,7 @@
 | Reifegrad | Gerüst |
 | Rolle | Solar-Touchscreen von A.R.M.O.R. (Familie: Clients, übergeordnet: ARMOR-SERVER) |
 | Technik | Kern und Simulator in C++17, CMake; Prüfungen in Python |
-| Tests | 7 Host-Programme |
+| Tests | 8 Host-Programme |
 | Platine | Guition JC1060P470C (ESP32-P4 mit ESP32-C6, 7 Zoll, 1024 x 600); Code wird übersetzt, lief nie darauf |
 | Läuft auf | Ein Computer mit CMake, C++17-Compiler und Python 3.11+ |
 | Auf echter Hardware | Nichts lief auf der Platine |
@@ -62,7 +62,7 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Hardware | 🔴 | Die Firmware wird übersetzt; nichts lief auf der Platine. |
 | Sicherheit | 🟠 | PIN und Schreibprüfung sind nur getestete Logik; keine unabhängige Prüfung. |
 | Aktualisierungen | 🔴 | Es gibt noch nichts zu aktualisieren. |
-| Integration | 🔴 | Noch keine Verbindung zu ARMOR-SERVER; die nötige kompakte Solar-Route fehlt. |
+| Integration | 🔴 | Eine Leseanbindung ist am Computer gegen den Simulator erprobt; die Firmware nutzt sie noch nicht. |
 | Dokumentation | 🟡 | README in acht Sprachen und die Entwurfsnotiz. |
 
 ## 🎯 Überblick
@@ -87,7 +87,8 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 * Zellen, Module und Stapel haben eine Stufe mit Symbol und Wort; nur ein Alarm blinkt, höchstens zweimal pro Sekunde.
 * PIN als gesalzener Hash, mit wachsenden Sperren und kurzer Sitzung.
 * Eine Batterieaktion wird nur angeboten, wenn der Server es erlaubt, die Daten frisch sind, die PIN offen ist und die Person bestätigt hat.
-* Simulator mit fünf Szenarien, gegen die Nachrichtenschemas geprüft.
+* Wer das Gerät baute und was die Batterie in drei Stufen meldet: Hinweis, Schutz und Fehler der Elektronik, der rot und ruhig steht.
+* Simulator mit sechs Szenarien, gegen die Nachrichtenschemas geprüft.
 * Bildschirme in 1024 x 600 in acht Sprachen, am Computer mit demselben Code wie die Firmware gezeichnet.
 * Platinentest für den ersten Tag: Chip, Speicher, Panel, Touch, I2C, Kabelnetz, Farbbalken und Ecken.
 
@@ -121,8 +122,9 @@ python -I tools/armor_ci_validate.py
 | `test_solar_view.cpp` | alte Daten, Stufen, Blinken |
 | `test_pin_gate.cpp` | PIN-Hash, Sperren, Sitzung |
 | `test_write_gate.cpp` | jeder Grund, der eine Aktion verhindert |
-| `test_plant.cpp` | die fünf Szenarien |
+| `test_plant.cpp` | die sechs Szenarien |
 | `test_screen_text.cpp` | jeder Text in acht Sprachen |
+| `test_server_link.cpp` | das Lesen des Servers: Abbrüche, Absagen |
 | `test_screen_model.cpp` | gelistete Alarme, Zahlen, Pins |
 | `check_font_glyphs.py` | die Schriften haben jedes Zeichen |
 | `check_simulator.py` | der Simulator folgt den Schemas |
@@ -150,6 +152,7 @@ ARMOR-NODE-SOLAR-HMI/
 │   ├── write_gate.hpp      wann eine Batterieaktion erscheint
 │   ├── screen_text.hpp     Texte in 8 Sprachen
 │   ├── screen_model.hpp    Alarme und Zahlen
+│   ├── server_link.hpp     liest den Server (nicht verbunden)
 │   ├── board_p4_jc1060.h   Pins der Platine
 │   ├── json.hpp            aus der gemeinsamen Firmware-Basis
 │   └── hmac_sha256.hpp     aus der gemeinsamen Firmware-Basis
@@ -160,7 +163,7 @@ ARMOR-NODE-SOLAR-HMI/
 │   ├── app_main.cpp        Start und Protokoll
 │   └── fonts/              Schriften
 ├── simulator/
-│   ├── plant.hpp           fünf Szenarien
+│   ├── plant.hpp           sechs Szenarien
 │   ├── main.cpp            gibt die Antworten aus
 │   └── screens/            Bilder am PC
 ├── tests/                  Host-Tests und Vertragsprüfungen
@@ -193,7 +196,7 @@ ARMOR-NODE-SOLAR-HMI/
 **Als Nächstes**
 
 * Das erste Einschalten auf der Platine mit dem Platinentest.
-* Eine kompakte Solar-Antwort in ARMOR-SERVER, zuerst in ARMOR-COMMON festgelegt, und die Anbindung des Bildschirms.
+* Die Anmeldung des Panelkontos und die Leseanbindung in der Firmware.
 * WLAN über den ESP32-C6, Einstellungen im Flash und Updates.
 * Die mit ARMOR-NODE-HMI gemeinsame Platinenschicht.
 
