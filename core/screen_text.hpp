@@ -59,7 +59,7 @@ constexpr Row kRows[] = {
     {"bms_notice", {"Battery notice", "Aviso de la batería", "Hinweis der Batterie", "Avis de la batterie", "Avviso della batteria", "電池の注意", "电池提示", "Aviso da bateria"}},
     {"left_out", {"Impossible figures left out", "Cifras imposibles omitidas", "Unmögliche Werte ausgelassen", "Valeurs impossibles ignorées", "Valori impossibili omessi", "あり得ない値を除外", "已略去不可能的数值", "Valores impossíveis omitidos"}},
     {"deduced", {"deduced", "deducido", "abgeleitet", "déduit", "dedotto", "推定", "推断", "deduzido"}},
-    {"mode", "Modo", "Betriebsart", "Mode", "Modo", "モード", "模式", "Modo"}},
+    {"mode", {"Mode", "Modo", "Betriebsart", "Mode", "Modo", "モード", "模式", "Modo"}},
     {"grid", {"Grid", "Red", "Netz", "Réseau", "Rete", "系統", "电网", "Rede"}},
     {"output", {"Output", "Salida", "Ausgang", "Sortie", "Uscita", "出力", "输出", "Saída"}},
     {"pv", {"Panels", "Paneles", "Module", "Panneaux", "Pannelli", "パネル", "光伏", "Painéis"}},
