@@ -17,7 +17,7 @@ namespace armor::solarhmi {
 
 struct PanelConfig {
   std::string host;                 // "" until set up
-  int port = 8080;
+  int port = 18080;
   bool tls = false;
   std::string fingerprint;          // 64 hexadecimal digits of the server's certificate, or ""
   std::string user;
@@ -78,7 +78,7 @@ inline PanelConfig read_config(std::string_view text) {
   };
   config.host = bounded("host", kMaxHost);
   if (!config.host.empty() && !valid_host(config.host)) config.host.clear();
-  config.port = static_cast<int>(document.integer_or("port", 8080, 1, 65535));
+  config.port = static_cast<int>(document.integer_or("port", 18080, 1, 65535));
   config.tls = document.bool_or("tls", false);
   config.fingerprint = server_pin::normalize(document.string_or("fingerprint", ""));
   config.user = bounded("user", kMaxUser);

@@ -32,7 +32,7 @@ void test_config() {
   CHECK(back.ssid == "home" && back.wifi_password == "secret" && !back.update_on);
   CHECK(read_config("not json").host.empty());
   const PanelConfig bad = read_config("{\"host\":\"a/b\",\"port\":99999,\"language\":\"xx\",\"fingerprint\":\"12\"}");
-  CHECK(bad.host.empty() && bad.port == 8080 && bad.language == "en" && bad.fingerprint.empty());
+  CHECK(bad.host.empty() && bad.port == 18080 && bad.language == "en" && bad.fingerprint.empty());
 }
 
 void test_pin_record() {
