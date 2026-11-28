@@ -51,6 +51,7 @@ struct Battery {
   Reading soc_percent, voltage_v, current_a, power_w, capacity_ah, full_capacity_ah, energy_kwh;
   std::vector<Module> stack;
   Maker maker;
+  Reading stack_health_percent;   // what the stack says of itself (pwrsys)
 };
 
 struct Inverter {
@@ -59,6 +60,7 @@ struct Inverter {
   Reading grid_v, out_w, load_percent, battery_v, battery_a, battery_percent, pv_w, heatsink_c;
   std::vector<std::string> warnings;
   Maker maker;
+  Reading pv_today_wh, pv_total_wh, load_today_wh, load_total_wh;   // counted by the inverter itself
 };
 
 // The sums are the server's: the screen does not add up the equipment itself, so that it says what Studio and the phone say.
@@ -149,6 +151,8 @@ inline Battery battery_of(const json::Value& reading) {
   battery.capacity_ah = number_in(reading, "capacity_ah", 0, 100000);
   battery.full_capacity_ah = number_in(reading, "full_capacity_ah", 0, 100000);
   battery.energy_kwh = number_in(reading, "energy_kwh", 0, 10000);
+  const json::Value* system = reading.get("bms_system");
+  if (system != nullptr && system->is_object()) battery.stack_health_percent = number_in(*system, "health_percent", 0, 100);
   const json::Value* stack = reading.get("stack");
   if (stack != nullptr && stack->is_array()) {
     for (const json::Value& entry : stack->items) {
@@ -171,6 +175,13 @@ inline Inverter inverter_of(const json::Value& reading) {
   inverter.battery_percent = number_in(reading, "battery_percent", 0, 100);
   inverter.pv_w = number_in(reading, "pv_w", 0, 100000);
   inverter.heatsink_c = number_in(reading, "heatsink_c", -50, 200);
+  inverter.pv_total_wh = number_in(reading, "pv_energy_total_wh", 0, 1e12);
+  const json::Value* energy = reading.get("energy");
+  if (energy != nullptr && energy->is_object()) {
+    inverter.pv_today_wh = number_in(*energy, "pv_today_wh", 0, 1e12);
+    inverter.load_today_wh = number_in(*energy, "load_today_wh", 0, 1e12);
+    inverter.load_total_wh = number_in(*energy, "load_total_wh", 0, 1e12);
+  }
   const json::Value* warnings = reading.get("warnings");
   if (warnings != nullptr && warnings->is_array()) {
     for (const json::Value& warning : warnings->items) {

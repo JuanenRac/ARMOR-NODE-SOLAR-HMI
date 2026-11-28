@@ -322,7 +322,8 @@ void page_cells() {
   button(g_content, 12, 8, 130, 52, word("back"), kPanelHigh, on_back, 0);
   const std::string maker = maker_text(module->maker.name.empty() ? stack_maker(battery) : module->maker, word("deduced"));
   label(g_content, 160, 8, 460, word("module") + " " + std::to_string(module->n) + " - " + battery.node + " / " + battery.device, Size::kNormal);
-  label(g_content, 160, 40, 460, maker, Size::kSmall, kSoft);
+  const std::string health = battery.stack_health_percent ? word("stack_health") + " " + format_percent(battery.stack_health_percent) : std::string();
+  label(g_content, 160, 40, 460, maker.empty() ? health : health.empty() ? maker : maker + " - " + health, Size::kSmall, kSoft);
   mark(g_content, 640, 22, 170, level);
   label(g_content, 820, 22, 192, format_value(module->temperature_c, 1, "°C") + "  " + format_percent(module->soc_percent), Size::kSmall, kInk, LV_TEXT_ALIGN_RIGHT);
 
@@ -380,6 +381,12 @@ void page_inverters() {
     std::string warnings;
     for (const std::string& warning : inverter.warnings) warnings += (warnings.empty() ? "" : ", ") + warning;
     label(card, 16, 234, 970, word("warnings") + ": " + (warnings.empty() ? word("none") : warnings), Size::kSmall, warnings.empty() ? kSoft : kWarn);
+    // what the inverter counts itself, only when it said it
+    const auto counted = [](const std::string& name, const Reading& today, const Reading& total) {
+      return name + ": " + word("energy_today") + " " + format_energy(today) + ", " + word("energy_total") + " " + format_energy(total);
+    };
+    if (inverter.pv_today_wh || inverter.pv_total_wh) label(card, 16, 262, 970, counted(word("solar_power"), inverter.pv_today_wh, inverter.pv_total_wh), Size::kSmall, kSun);
+    if (inverter.load_today_wh || inverter.load_total_wh) label(card, 16, 290, 970, counted(word("load_power"), inverter.load_today_wh, inverter.load_total_wh), Size::kSmall, kSoft);
     y += 340;
   }
   if (g_state.snapshot.inverters.empty()) paragraph(g_content, 112, 180, 800, word(g_state.link == Link::kNever ? "waiting" : "no_devices"), Size::kNormal, kSoft);
