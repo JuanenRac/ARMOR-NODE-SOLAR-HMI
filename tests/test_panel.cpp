@@ -118,8 +118,7 @@ void test_session() {
 void test_update() {
   CHECK(board_name(false, false) == "jc1060-rev1-newpanel" && board_name(true, true) == "jc1060-rev3-oldpanel");
   const std::string hash(64, 'a');
-  CHECK(published_hash(std::string(64, 'A') + "  app.bin
-") == hash);
+  CHECK(published_hash(std::string(64, 'A') + "  app.bin\n") == hash);
   CHECK(published_hash(hash) == hash);
   CHECK(published_hash("abc").empty() && published_hash(hash + "f").empty() && published_hash(std::string(64, 'g')).empty());
   ImageFacts facts{"armor_solar_hmi", "armor_solar_hmi", "jc1060-rev1-newpanel", "0.0.9", "0.0.3", hash, hash, std::string(128, '0')};

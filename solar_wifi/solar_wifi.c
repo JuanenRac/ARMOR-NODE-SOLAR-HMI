@@ -57,8 +57,9 @@ esp_err_t solar_wifi_start(const char* ssid, const char* password) {
   ESP_RETURN_ON_ERROR(esp_wifi_set_storage(WIFI_STORAGE_RAM), TAG, "the storage");
   ESP_RETURN_ON_ERROR(esp_wifi_set_mode(WIFI_MODE_STA), TAG, "station mode");
   wifi_config_t station = {0};
-  strncpy((char*)station.sta.ssid, ssid, sizeof station.sta.ssid);
-  if (password != NULL) strncpy((char*)station.sta.password, password, sizeof station.sta.password);
+  // the two fields need no final zero when they are full
+  memcpy(station.sta.ssid, ssid, strnlen(ssid, sizeof station.sta.ssid));
+  if (password != NULL) memcpy(station.sta.password, password, strnlen(password, sizeof station.sta.password));
   ESP_RETURN_ON_ERROR(esp_wifi_set_config(WIFI_IF_STA, &station), TAG, "the network");
   return esp_wifi_start();
 }
