@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- The default port of the server in the screen settings is 18080, the port the server listens on (it was 8080).
+
 ## [0.0.3] - Setup, reading link, Wi-Fi, signed updates and equipment figures, never run on a board
 
 - **What the equipment counts is drawn:** the inverter page says the energy of the panels and of the load that the inverter counts (today and in all), and the cells page the health the stack says of itself, only when said.
