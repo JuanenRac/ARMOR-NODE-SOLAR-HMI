@@ -42,6 +42,12 @@ inline std::string format_value(const Reading& value, int places, const char* un
   return format_number(*value, places) + " " + unit;
 }
 
+// Watt-hours as the inverter counts them, written in kilowatt-hours.
+inline std::string format_energy(const Reading& watt_hours) {
+  if (!watt_hours) return "--";
+  return format_number(*watt_hours / 1000.0, 1) + " kWh";
+}
+
 inline std::string format_percent(const Reading& value) { return value ? format_number(*value, 0) + " %" : std::string("--"); }
 
 // "Pylon", or "Daly (deduced)" with the word given; empty when the maker is not known.

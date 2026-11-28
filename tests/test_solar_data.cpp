@@ -97,5 +97,18 @@ int main() {
   CHECK(said.stack.size() == 1 && said.stack[0].states.size() == 1 && said.stack[0].states[0].cell == 2);
   CHECK(said.stack[0].cells_unread.size() == 1 && said.stack[0].left_out.size() == 1);
 
+  {
+    Snapshot counted;
+    CHECK(read_snapshot("{\"devices\":[{\"node_id\":\"a\",\"device\":\"i\",\"kind\":\"inverter\",\"stale\":false,\"reading\":{\"pv_energy_total_wh\":5000,\"energy\":{\"pv_today_wh\":1200,\"load_total_wh\":-1}}},"
+                        "{\"node_id\":\"a\",\"device\":\"b\",\"kind\":\"battery\",\"stale\":false,\"reading\":{\"bms_system\":{\"health_percent\":97}}}],\"totals\":{}}",
+                        counted) == ReadError::kNone);
+    CHECK(counted.inverters.size() == 1 && counted.batteries.size() == 1);
+    if (counted.inverters.size() == 1 && counted.batteries.size() == 1) {
+      const Inverter& inverter = counted.inverters[0];
+      CHECK(inverter.pv_today_wh && *inverter.pv_today_wh == 1200 && inverter.pv_total_wh && *inverter.pv_total_wh == 5000);
+      CHECK(!inverter.load_total_wh && !inverter.load_today_wh);
+      CHECK(counted.batteries[0].stack_health_percent && *counted.batteries[0].stack_health_percent == 97);
+    }
+  }
   FINISH("solar_data");
 }
